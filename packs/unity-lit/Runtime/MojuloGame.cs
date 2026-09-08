@@ -43,8 +43,7 @@ namespace Mojulo
                 PlayerPrefs.SetString(SaveKey, string.Join("|", done));
                 PlayerPrefs.Save();
             }
-            if (HasMenu()) level.Invoke(nameof(ToMenuBridge.Go), 0f);
-            ToMenuBridge.Arm(level, 1.5f);
+            ToMenuBridge.Arm(level, 1.5f);   // the bridge hosts the delayed Go; MojuloLevel has no such method
         }
 
         public static void LevelFailed(MojuloLevel level) { ToMenuBridge.Arm(level, 1.5f); }

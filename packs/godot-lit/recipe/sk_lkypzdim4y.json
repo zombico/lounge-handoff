@@ -23,20 +23,5 @@
   "furnish": true,
   "view": "cutaway",
   "seed": 7,
-  "quality": {
-    "score": 0.48,
-    "breakdown": {
-      "reachability": 1,
-      "egress": 0,
-      "proportion": 1,
-      "adjacency": 0,
-      "daylight": 0
-    },
-    "violations": [
-      "lounge needs a window for egress but has none",
-      "lounge: mustTouch circulation",
-      "lounge is under-lit (window area 0% of floor, want 8%)"
-    ]
-  },
   "potLights": true
 }

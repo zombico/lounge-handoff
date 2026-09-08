@@ -10,7 +10,7 @@ follow `IMPORT-GUIDE.md`; the web build is the reference performance.
 ## Provenance
 
 - source ref: `sk_lkypzdim4y`
-- manifest sha256/16: `fee2b9a2a50a2857`
+- manifest sha256/16: `fc95e0c38dd696a1`
 - unity leg: v0.4.0, target Unity 6 (6000.2.x), glTF importer `com.unity.cloud.gltfast`
 - units: 1 mojulo unit = 1 meter; frame z-up → y-up baked into the GLB root, sidecar mapped by the kernel (one function, gate-asserted)
 - re-mint: `node scripts/export-unity.mjs --ref sk_lkypzdim4y` (from mojulo's `control/`)

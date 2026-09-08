@@ -1,0 +1,72 @@
+{
+  "ok": true,
+  "ref": "sk_lkypzdim4y",
+  "scope": "world",
+  "dir": "/Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unreal",
+  "manifest_hash": "fc95e0c38dd696a1",
+  "leg": "0.4.1",
+  "glb": {
+    "bytes": 695532,
+    "nodes": 27,
+    "triangles": 10694,
+    "animations": 0,
+    "cameras": 2,
+    "entities": 0
+  },
+  "files": 7,
+  "total_bytes": 741974,
+  "portability": {
+    "portable": false,
+    "flags": [
+      "sk_lkypzdim4y: no completion mechanic (reach-exit / survive) — the win condition lives in runtime code, which does not travel"
+    ]
+  },
+  "ledger": {
+    "sky_approximated": {
+      "note": "sky/backdrop dropped as mesh — approximate with the engine sky/fog"
+    },
+    "skipped_runtime": {
+      "note": "game shell, AI, combat feel — re-orchestrate in-engine; reference performance is the web build"
+    },
+    "lights_carried": {
+      "count": 9,
+      "note": "recessed pot lights ride the GLB as KHR_lights_punctual spots (candela) and the score carries them too; Blender, Godot and Unity import them from the GLB (Godot converts candela to its lamp energy in the pack kernel), the Unreal importer spawns SpotLights from score.json when Interchange brings none"
+    },
+    "textures_carried": {
+      "count": 1,
+      "kinds": [
+        "wood-oak"
+      ],
+      "note": "surface/atlas textures travel inside the GLB (Interchange imports them as base-colour maps — pinned at the first machine gate); the web build is the reference look"
+    },
+    "promoted_ground": {
+      "note": "implicit runtime ground plane promoted by the importer — the collider AABBs are obstacle hulls only, never the floor"
+    },
+    "entity_markers": {
+      "note": "entities that baked no mesh (glyph/primitive bodies — export-side gap) get placeholder markers; the web build is the reference look"
+    },
+    "cameras_data_only": {
+      "count": 2,
+      "note": "authored camera framings ride score.json as data; the walker camera is the play view"
+    }
+  },
+  "gate": {
+    "skipped": false,
+    "import_exit": 0,
+    "python_clean": true,
+    "verify_exit": 0,
+    "checks": {
+      "ok": true,
+      "checks": [
+        "PASS scene_exists — /Game/MojuloPack/Maps/mojulo-level",
+        "PASS world_instance — 34 actors",
+        "PASS collider_count — 0 vs 0",
+        "PASS spawn_marker — <Struct 'Vector' (0x3adc7f670) {x: 365.760000, y: -426.720000, z: 96.000000}>",
+        "PASS ground_plane",
+        "PASS lights_carried — 9 local lights vs 9 in the score",
+        "PASS materials_unlit — 16 of 16 static-mesh slots"
+      ]
+    }
+  },
+  "eyes_gate": "follow /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unreal/IMPORT-GUIDE.md — chunks ① project → ⑤ play; the guide is the no-Unreal-here path too"
+}

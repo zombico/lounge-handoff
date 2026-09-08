@@ -1,0 +1,10 @@
+[export-unity] resolved 'sk_lkypzdim4y' (kind floorplan) — GLB 695532 bytes, 0 animations
+[export-unity] emitted 25 files (leg v0.4.0) → /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unity-lit
+[export-unity] machine gate — copying pack into Assets/MojuloPack
+[export-unity] machine gate — headless import + scene build (first run resolves packages; may take minutes)
+[export-unity] machine gate — verify pass
+[export-unity] machine gate — materials probe (lit export; 1 GLB(s) declare 14 PBR + 2 unlit materials, 9 lights)
+[export-unity]   ✓ materials_built: expected 16 got 16
+[export-unity]   ✓ unlit_as_declared: expected 2 got 2
+[export-unity]   ✓ shaded_as_declared: expected 14 got 14
+[export-unity]   ✓ lights_as_declared: expected 9 got 9

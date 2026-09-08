@@ -2,9 +2,9 @@
   "ok": true,
   "ref": "sk_lkypzdim4y",
   "scope": "world",
-  "dir": "/Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/godot-lit",
+  "dir": "/Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unity-lit",
   "manifest_hash": "fc95e0c38dd696a1",
-  "kernel": "0.2.1",
+  "leg": "0.4.0",
   "glb": {
     "bytes": 695532,
     "nodes": 27,
@@ -13,8 +13,8 @@
     "cameras": 2,
     "entities": 0
   },
-  "files": 14,
-  "total_bytes": 736221,
+  "files": 25,
+  "total_bytes": 763430,
   "portability": {
     "portable": false,
     "flags": [
@@ -37,28 +37,34 @@
       "kinds": [
         "wood-oak"
       ],
-      "note": "surface/atlas textures travel inside the GLB and multiply with the baked vertex colours (kernel material fixup) — the web build is the reference look"
+      "note": "surface/atlas textures travel inside the GLB (glTFast imports them as albedo maps) — the web build is the reference look"
+    },
+    "promoted_ground": {
+      "note": "implicit runtime ground plane promoted by the importer — the collider AABBs are obstacle hulls only, never the floor"
     },
     "entity_markers": {
       "note": "entities that baked no mesh (glyph/primitive bodies — export-side gap) render as gold placeholder markers; the web build is the reference look"
     },
-    "web_color_shift": {
-      "note": "web preset renders via GL Compatibility, which reads vertex colours as sRGB — linear COLOR_0 draws darker there; desktop uses Forward+ and is colour-true"
-    },
-    "promoted_ground": {
-      "note": "implicit runtime ground plane promoted by the kernel — the collider AABBs are obstacle hulls only, never the floor"
+    "cameras_data_only": {
+      "count": 2,
+      "note": "authored camera framings ride score.json as data; the walker head camera is the play view"
     }
   },
   "gate": {
     "skipped": false,
-    "import_first_exit": 0,
     "import_exit": 0,
-    "dot_godot": true,
-    "one_frame": {
-      "main": {
-        "exit": 0,
-        "clean": true
-      }
+    "compile_clean": true,
+    "verify_exit": 0,
+    "checks": {
+      "ok": true,
+      "checks": [
+        "PASS mojulo-level:scene_exists — Assets/MojuloPack/Scenes/mojulo-level.unity",
+        "PASS mojulo-level:world_instance",
+        "PASS mojulo-level:collider_count — 0 vs 0",
+        "PASS mojulo-level:spawn_marker — (-3.66, 0.00, -4.27)",
+        "PASS mojulo-level:ground_plane",
+        "PASS mojulo-level:kernel_wired"
+      ]
     },
     "materials": {
       "ok": true,
@@ -75,14 +81,18 @@
       },
       "built": {
         "files": 1,
-        "surfaces": 16,
-        "unshaded": 2,
-        "shaded": 14,
+        "materials": 16,
+        "unlit": 2,
+        "lit": 14,
         "other": 0,
-        "lights": 9
+        "lights": 9,
+        "by_shader": {
+          "glTF/PbrMetallicRoughness": 14,
+          "glTF/Unlit": 2
+        }
       },
       "checks": {
-        "surfaces_built": {
+        "materials_built": {
           "expected": 16,
           "got": 16,
           "ok": true
@@ -103,10 +113,7 @@
           "ok": true
         }
       }
-    },
-    "locomotion_probe": {
-      "skipped": "no player locomotion row"
     }
   },
-  "eyes_gate": "run: /Applications/Godot.app/Contents/MacOS/Godot --path /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/godot-lit — walk with WASD + mouse"
+  "eyes_gate": "follow /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unity-lit/IMPORT-GUIDE.md — chunks ① project → ⑤ play; the guide is the no-Unity-here path too"
 }

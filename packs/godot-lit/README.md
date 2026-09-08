@@ -10,7 +10,7 @@ reference performance.
 ## Provenance
 
 - source ref: `sk_lkypzdim4y`
-- manifest sha256/16: `f89f5378ac790598`
+- manifest sha256/16: `fc95e0c38dd696a1`
 - kernel: mojulo-godot 0.2.1
 - units: 1 mojulo unit = 1 meter; frame converted z-up → y-up by the kernel, matching the GLB root
 - re-mint: `node scripts/export-godot.mjs --ref sk_lkypzdim4y` (from mojulo's `control/`)

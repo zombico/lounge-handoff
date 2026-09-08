@@ -30,13 +30,13 @@ T005 Content Browser > Content > MojuloPack > Maps > `mojulo-level` — open
 T006 Toolbar > [Play] — judge with your own eyes:
 #003 the world mesh is LIT by MojuloSun + the sky atmosphere through M_MojuloLit — sun patches through the panes, a blue sky in the windows, no "Preview" stamp on the shadows (reference look: blender-bake.mjs --render)
 #004 you can walk the level as the template character — the floor holds (the promoted ground plane) and the obstacle colliders block
-#005 scale reads right at a 1.28016 m eye height — doors, steps, cover
+#005 scale reads right at a 1.61544 m eye height — doors, steps, cover
 
 ## What travelled, what didn't
 
 #101 sky_approximated — sky/backdrop dropped as mesh — approximate with the engine sky/fog
 #102 skipped_runtime — game shell, AI, combat feel — re-orchestrate in-engine; reference performance is the web build
-#103 lights_carried ×9 — recessed pot lights ride the GLB as KHR_lights_punctual spots (candela); Blender / Godot import them, the Unreal importer spawns SpotLights from score.json when Interchange brings none
+#103 lights_carried ×9 — recessed pot lights ride the GLB as KHR_lights_punctual spots (candela) and the score carries them too; Blender, Godot and Unity import them from the GLB (Godot converts candela to its lamp energy in the pack kernel), the Unreal importer spawns SpotLights from score.json when Interchange brings none
 #104 textures_carried ×1 — surface/atlas textures travel inside the GLB (Interchange imports them as base-colour maps — pinned at the first machine gate); the web build is the reference look
 #105 promoted_ground — implicit runtime ground plane promoted by the importer — the collider AABBs are obstacle hulls only, never the floor
 #106 entity_markers — entities that baked no mesh (glyph/primitive bodies — export-side gap) get placeholder markers; the web build is the reference look

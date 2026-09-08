@@ -5,12 +5,13 @@
   "frame": "z-up",
   "units": "1 mojulo unit = 1 meter",
   "metersPerUnit": 0.3048,
+  "unitsNote": "score and GLB are in metres already: recipe units × 0.3048 applied by the exporter; metersPerUnit is provenance, never a second scale",
   "spawn": [
     3.6576000000000004,
     4.2672,
-    1.2801600000000002
+    0
   ],
-  "eye": 1.2801600000000002,
+  "eye": 1.61544,
   "ground": 0,
   "textures": [
     "wood-oak"
@@ -223,7 +224,7 @@
     },
     "lights_carried": {
       "count": 9,
-      "note": "recessed pot lights ride the GLB as KHR_lights_punctual spots (candela); Blender / Godot import them, the Unreal importer spawns SpotLights from score.json when Interchange brings none"
+      "note": "recessed pot lights ride the GLB as KHR_lights_punctual spots (candela) and the score carries them too; Blender, Godot and Unity import them from the GLB (Godot converts candela to its lamp energy in the pack kernel), the Unreal importer spawns SpotLights from score.json when Interchange brings none"
     }
   }
 }

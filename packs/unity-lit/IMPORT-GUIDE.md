@@ -28,7 +28,7 @@ T005.01 Console — confirm one line: `[mojulo] imported 'One-room house plan �
 T006 Project > Assets > MojuloPack > Scenes > `mojulo-level.unity` — open
 T007 Toolbar > [Play] — judge with your own eyes:
 #003 the world mesh renders in its baked vertex colours (reference look: the mojulo web build)
-#004 you can walk: WASD/arrows + mouse look, Space jumps, Esc frees the mouse — eye height 1.28016 m
+#004 you can walk: WASD/arrows + mouse look, Space jumps, Esc frees the mouse — eye height 1.61544 m
 
 ## ⑥ Ship it (optional) — a standalone app
 
