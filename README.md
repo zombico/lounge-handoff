@@ -9,7 +9,7 @@ regenerates every file here on every read. Nothing below was authored by hand.
 | Where to look | What it is |
 | --- | --- |
 | [`index.html`](index.html) | The handoff report: recipe → kernel → three engines → three edits, with the gates verbatim. This is the GitHub Pages front page. |
-| [`walk/`](walk/) | The room as a self-contained three.js page. WASD walks, mouse looks. No build step, no server beyond static hosting. On Pages: `/walk/`. |
+| [`walk/`](walk/) | The room as a self-contained three.js page, mojulo's own web tier. It opens on the aerial cutaway; the buttons top-left switch to the corner framing, fly, or walk. In walk, WASD moves and the mouse looks. No build step, no server beyond static hosting. On Pages: `/walk/`. |
 | [`videos/`](videos/) | Representation videos, see below. |
 | [`packs/`](packs/) | The engine handoffs: `godot-lit/`, `unity-lit/`, `unreal/`, and the lit glTF on its own. |
 | [`gates/`](gates/) | What each machine gate measured, verbatim: the Godot handback JSON and log, the Unreal and Unity import and verify logs. |
@@ -78,7 +78,7 @@ node scripts/export-unity.mjs  --ref <ref> --lit
 node scripts/export-unreal.mjs --ref <ref>
 node scripts/export-blender.mjs --ref <ref>          # lit is its default base
 # the walkable page
-curl "http://localhost:3001/api/sketches/<ref>/world?download=1&walk=1&hud=0" -o walk/index.html
+curl "http://localhost:3001/api/sketches/<ref>/world?download=1&walk=1" -o walk/index.html   # from a server running current source
 # the web-tier videos
 node scripts/mcp-stdio.mjs call forge_motion --json "$(cat videos/web-orbit.recipe.json)"
 # the Godot walkthrough (writes a frame sequence next to the pack, then ffmpeg it at 30 fps)
