@@ -1,0 +1,15 @@
+{
+  "profile": "engine-score/1",
+  "portable": false,
+  "flags": [
+    "sk_lkypzdim4y: no completion mechanic (reach-exit / survive) — the win condition lives in runtime code, which does not travel"
+  ],
+  "perLevel": {
+    "sk_lkypzdim4y": {
+      "portable": false,
+      "flags": [
+        "no completion mechanic (reach-exit / survive) — the win condition lives in runtime code, which does not travel"
+      ]
+    }
+  }
+}

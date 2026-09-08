@@ -1,0 +1,229 @@
+{
+  "ref": "sk_lkypzdim4y",
+  "title": "One-room house plan — living",
+  "kind": "floorplan",
+  "frame": "z-up",
+  "units": "1 mojulo unit = 1 meter",
+  "metersPerUnit": 0.3048,
+  "spawn": [
+    3.6576000000000004,
+    4.2672,
+    1.2801600000000002
+  ],
+  "eye": 1.2801600000000002,
+  "ground": 0,
+  "textures": [
+    "wood-oak"
+  ],
+  "colliders": [],
+  "cameras": [
+    {
+      "name": "aerial",
+      "translation": [
+        2.9260800000000002,
+        -4.5110399999999995,
+        9.99744
+      ],
+      "rotation": [
+        0.35303103582612516,
+        -0.014684177235795452,
+        -0.038877960549235785,
+        0.9346881655750077
+      ],
+      "yfov": 0.7195364900691216,
+      "aspectRatio": 1.4736842105263157,
+      "znear": 0.030480000000000004,
+      "zfar": 2438.4
+    },
+    {
+      "name": "corner",
+      "translation": [
+        -2.7432000000000003,
+        -3.7795199999999998,
+        7.9248
+      ],
+      "rotation": [
+        0.4166499415649183,
+        -0.1455033400293116,
+        -0.2958517381265323,
+        0.8471737444478402
+      ],
+      "yfov": 0.887126468760481,
+      "aspectRatio": 1.4736842105263157,
+      "znear": 0.030480000000000004,
+      "zfar": 2438.4
+    }
+  ],
+  "lights": [
+    {
+      "name": "pot:0",
+      "type": "spot",
+      "position": [
+        2.1336,
+        2.3367999999999998,
+        3.01752
+      ],
+      "color": [
+        1,
+        0.93,
+        0.82
+      ],
+      "intensity": 400,
+      "innerCone": 0.52,
+      "outerCone": 0.87
+    },
+    {
+      "name": "pot:1",
+      "type": "spot",
+      "position": [
+        3.6576000000000004,
+        2.3367999999999998,
+        3.01752
+      ],
+      "color": [
+        1,
+        0.93,
+        0.82
+      ],
+      "intensity": 400,
+      "innerCone": 0.52,
+      "outerCone": 0.87
+    },
+    {
+      "name": "pot:2",
+      "type": "spot",
+      "position": [
+        5.1816,
+        2.3367999999999998,
+        3.01752
+      ],
+      "color": [
+        1,
+        0.93,
+        0.82
+      ],
+      "intensity": 400,
+      "innerCone": 0.52,
+      "outerCone": 0.87
+    },
+    {
+      "name": "pot:3",
+      "type": "spot",
+      "position": [
+        2.1336,
+        4.2672,
+        3.01752
+      ],
+      "color": [
+        1,
+        0.93,
+        0.82
+      ],
+      "intensity": 400,
+      "innerCone": 0.52,
+      "outerCone": 0.87
+    },
+    {
+      "name": "pot:4",
+      "type": "spot",
+      "position": [
+        3.6576000000000004,
+        4.2672,
+        3.01752
+      ],
+      "color": [
+        1,
+        0.93,
+        0.82
+      ],
+      "intensity": 400,
+      "innerCone": 0.52,
+      "outerCone": 0.87
+    },
+    {
+      "name": "pot:5",
+      "type": "spot",
+      "position": [
+        5.1816,
+        4.2672,
+        3.01752
+      ],
+      "color": [
+        1,
+        0.93,
+        0.82
+      ],
+      "intensity": 400,
+      "innerCone": 0.52,
+      "outerCone": 0.87
+    },
+    {
+      "name": "pot:6",
+      "type": "spot",
+      "position": [
+        2.1336,
+        6.197600000000001,
+        3.01752
+      ],
+      "color": [
+        1,
+        0.93,
+        0.82
+      ],
+      "intensity": 400,
+      "innerCone": 0.52,
+      "outerCone": 0.87
+    },
+    {
+      "name": "pot:7",
+      "type": "spot",
+      "position": [
+        3.6576000000000004,
+        6.197600000000001,
+        3.01752
+      ],
+      "color": [
+        1,
+        0.93,
+        0.82
+      ],
+      "intensity": 400,
+      "innerCone": 0.52,
+      "outerCone": 0.87
+    },
+    {
+      "name": "pot:8",
+      "type": "spot",
+      "position": [
+        5.1816,
+        6.197600000000001,
+        3.01752
+      ],
+      "color": [
+        1,
+        0.93,
+        0.82
+      ],
+      "intensity": 400,
+      "innerCone": 0.52,
+      "outerCone": 0.87
+    }
+  ],
+  "entities": [],
+  "mechanics": [],
+  "player": null,
+  "game": null,
+  "soundtrack": null,
+  "ledger": {
+    "sky_approximated": {
+      "note": "sky/backdrop dropped as mesh — approximate with the engine sky/fog"
+    },
+    "skipped_runtime": {
+      "note": "game shell, AI, combat feel — re-orchestrate in-engine; reference performance is the web build"
+    },
+    "lights_carried": {
+      "count": 9,
+      "note": "recessed pot lights ride the GLB as KHR_lights_punctual spots (candela); Blender / Godot import them, the Unreal importer spawns SpotLights from score.json when Interchange brings none"
+    }
+  }
+}

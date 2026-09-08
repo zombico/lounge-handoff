@@ -1,0 +1,84 @@
+{
+  "motion_ref": "mo_a76b1a18c9ae",
+  "title": "Lounge — flythrough",
+  "subject": {
+    "world_ref": "sk_lkypzdim4y"
+  },
+  "shot": {
+    "motion": "flythrough",
+    "params": {
+      "width": 960,
+      "height": 540,
+      "keyframes": [
+        {
+          "pos": [
+            12,
+            44,
+            24
+          ],
+          "lookAt": [
+            12,
+            14,
+            4
+          ],
+          "fov": 55
+        },
+        {
+          "pos": [
+            12,
+            25,
+            5.5
+          ],
+          "lookAt": [
+            12,
+            8,
+            4
+          ],
+          "fov": 60
+        },
+        {
+          "pos": [
+            12,
+            18,
+            5
+          ],
+          "lookAt": [
+            12,
+            3,
+            4
+          ],
+          "fov": 60
+        },
+        {
+          "pos": [
+            5.5,
+            10,
+            5.5
+          ],
+          "lookAt": [
+            15,
+            13,
+            3
+          ],
+          "fov": 60
+        }
+      ]
+    },
+    "frames": 96,
+    "fps": 12,
+    "loop": true
+  },
+  "viewBox": [
+    0,
+    0,
+    960,
+    540
+  ],
+  "meta": {
+    "motion": "flythrough",
+    "frames": 96,
+    "fps": 12,
+    "loop": true,
+    "backend": "three"
+  }
+}

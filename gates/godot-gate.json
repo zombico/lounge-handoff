@@ -1,0 +1,112 @@
+{
+  "ok": true,
+  "ref": "sk_lkypzdim4y",
+  "scope": "world",
+  "dir": "/Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/godot-lit",
+  "manifest_hash": "f89f5378ac790598",
+  "kernel": "0.2.1",
+  "glb": {
+    "bytes": 695552,
+    "nodes": 27,
+    "triangles": 10694,
+    "animations": 0,
+    "cameras": 2,
+    "entities": 0
+  },
+  "files": 14,
+  "total_bytes": 736473,
+  "portability": {
+    "portable": false,
+    "flags": [
+      "sk_lkypzdim4y: no completion mechanic (reach-exit / survive) — the win condition lives in runtime code, which does not travel"
+    ]
+  },
+  "ledger": {
+    "sky_approximated": {
+      "note": "sky/backdrop dropped as mesh — approximate with the engine sky/fog"
+    },
+    "skipped_runtime": {
+      "note": "game shell, AI, combat feel — re-orchestrate in-engine; reference performance is the web build"
+    },
+    "lights_carried": {
+      "count": 9,
+      "note": "recessed pot lights ride the GLB as KHR_lights_punctual spots (candela); Blender / Godot import them, the Unreal importer spawns SpotLights from score.json when Interchange brings none"
+    },
+    "textures_carried": {
+      "count": 1,
+      "kinds": [
+        "wood-oak"
+      ],
+      "note": "surface/atlas textures travel inside the GLB and multiply with the baked vertex colours (kernel material fixup) — the web build is the reference look"
+    },
+    "entity_markers": {
+      "note": "entities that baked no mesh (glyph/primitive bodies — export-side gap) render as gold placeholder markers; the web build is the reference look"
+    },
+    "web_color_shift": {
+      "note": "web preset renders via GL Compatibility, which reads vertex colours as sRGB — linear COLOR_0 draws darker there; desktop uses Forward+ and is colour-true"
+    },
+    "promoted_ground": {
+      "note": "implicit runtime ground plane promoted by the kernel — the collider AABBs are obstacle hulls only, never the floor"
+    }
+  },
+  "gate": {
+    "skipped": false,
+    "import_first_exit": 0,
+    "import_exit": 0,
+    "dot_godot": true,
+    "one_frame": {
+      "main": {
+        "exit": 0,
+        "clean": true
+      }
+    },
+    "materials": {
+      "ok": true,
+      "ran": true,
+      "mode": "lit",
+      "declared": {
+        "primitives": 16,
+        "unlit_primitives": 2,
+        "pbr_primitives": 14,
+        "materials": 16,
+        "unlit_materials": 2,
+        "pbr_materials": 14,
+        "lights": 9
+      },
+      "built": {
+        "files": 1,
+        "surfaces": 16,
+        "unshaded": 2,
+        "shaded": 14,
+        "other": 0,
+        "lights": 9
+      },
+      "checks": {
+        "surfaces_built": {
+          "expected": 16,
+          "got": 16,
+          "ok": true
+        },
+        "unlit_as_declared": {
+          "expected": 2,
+          "got": 2,
+          "ok": true
+        },
+        "shaded_as_declared": {
+          "expected": 14,
+          "got": 14,
+          "ok": true
+        },
+        "lights_as_declared": {
+          "expected": 9,
+          "got": 9,
+          "ok": true
+        }
+      }
+    },
+    "locomotion_probe": {
+      "skipped": "no player locomotion row"
+    }
+  },
+  "eyes_gate": "run: /Applications/Godot.app/Contents/MacOS/Godot --path /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/godot-lit — walk with WASD + mouse"
+}

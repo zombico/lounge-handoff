@@ -1,0 +1,4 @@
+.DS_Store
+packs/**/.godot/
+packs/**/frames/
+frames/

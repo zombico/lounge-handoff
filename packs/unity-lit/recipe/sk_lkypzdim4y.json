@@ -1,0 +1,40 @@
+{
+  "title": "One-room house plan — living",
+  "kind": "floorplan",
+  "width": 24,
+  "height": 28,
+  "rooms": [
+    {
+      "x": 2,
+      "y": 2,
+      "w": 20,
+      "h": 24,
+      "glyph": "L"
+    }
+  ],
+  "doors": [
+    {
+      "x": 12,
+      "y": 26,
+      "room": 0,
+      "edge": "S"
+    }
+  ],
+  "furnish": true,
+  "view": "cutaway",
+  "seed": 7,
+  "quality": {
+    "score": 0.87,
+    "breakdown": {
+      "reachability": 1,
+      "egress": 1,
+      "proportion": 1,
+      "adjacency": 0,
+      "daylight": 1
+    },
+    "violations": [
+      "lounge: mustTouch circulation"
+    ]
+  },
+  "potLights": true
+}

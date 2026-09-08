@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://model.glb" id="model"]
+[ext_resource type="Script" path="res://kernel/level.gd" id="kernel"]
+
+[node name="Level" type="Node3D"]
+script = ExtResource("kernel")
+score_path = "res://score.json"
+
+[node name="World" parent="." instance=ExtResource("model")]

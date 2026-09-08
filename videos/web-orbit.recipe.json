@@ -1,0 +1,32 @@
+{
+  "motion_ref": "mo_eada3e10f20f",
+  "title": "Lounge — orbit",
+  "subject": {
+    "world_ref": "sk_lkypzdim4y"
+  },
+  "shot": {
+    "motion": "orbit",
+    "params": {
+      "from": 0,
+      "to": 360,
+      "width": 960,
+      "height": 540
+    },
+    "frames": 48,
+    "fps": 12,
+    "loop": true
+  },
+  "viewBox": [
+    0,
+    0,
+    960,
+    540
+  ],
+  "meta": {
+    "motion": "orbit",
+    "frames": 48,
+    "fps": 12,
+    "loop": true,
+    "backend": "three"
+  }
+}
