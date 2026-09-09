@@ -6,14 +6,18 @@ walkable Godot project and a walkable web page. Everything in this repository is
 agents: the agent builds worlds by conversation, as editable deterministic recipes, and the recipe
 regenerates every file here on every read. Nothing below was authored by hand.
 
+Live: the report at <https://zombico.github.io/lounge-handoff/> and the walkable room at
+<https://zombico.github.io/lounge-handoff/walk/>. The five videos play on the report page under
+"In motion".
+
 | Where to look | What it is |
 | --- | --- |
 | [`index.html`](index.html) | The handoff report: recipe → kernel → three engines → three edits, with the gates verbatim. This is the GitHub Pages front page. |
 | [`walk/`](walk/) | The room as a self-contained three.js page, mojulo's own web tier. It opens on the aerial cutaway; the buttons top-left switch to the corner framing, fly, or walk. In walk, WASD moves and the mouse looks. No build step, no server beyond static hosting. On Pages: `/walk/`. |
 | [`videos/`](videos/) | Representation videos, see below. |
 | [`packs/`](packs/) | The engine handoffs: `godot-lit/`, `unity-lit/`, `unreal/`, and the lit glTF on its own. |
-| [`gates/`](gates/) | What each machine gate measured, verbatim: the Godot handback JSON and log, the Unreal and Unity import and verify logs. |
-| [`renders/`](renders/) | Cycles frames (day, night, dusk, before and after each edit), the two Godot frames from the kernel fix, and under `report/` the figures the report page shows. |
+| [`gates/`](gates/) | What each machine gate measured, verbatim: the Godot handback JSON and log, the Unreal and Unity import and verify logs, and the Unreal sequence-authoring and capture logs behind the two Unreal videos. |
+| [`renders/`](renders/) | Cycles frames (day, night, dusk, before and after each edit), the two Godot frames from the kernel fix, three Unreal frames (spawn, orbit, night), and under `report/` the figures the report page shows. |
 
 ## The recipe
 
@@ -47,12 +51,19 @@ manifest; storing it once gave this room two hashes across three packs.
 | `web-orbit.mp4` | mojulo web tier (three.js, headless WebGL) | A full orbit of the cutaway room from above. 48 frames, 12 fps. Recipe: `web-orbit.recipe.json`. |
 | `web-flythrough.mp4` | mojulo web tier | Descends over the south wall, enters at the door, glides to the seating group. 96 frames, 12 fps. Recipe: `web-flythrough.recipe.json`. |
 | `godot-walkthrough.mp4` (and a `.gif` preview for this page) | Godot 4.7, Forward+, kernel 0.2.1 | Two camera moves inside the lit pack: a push-in from the door toward the media wall, then an eye-height orbit of the seating group. 420 frames, 30 fps. Script: `godot-walkthrough.gd`. |
+| `unreal-walkthrough.mp4` / `.gif` | Unreal 5.8, Lumen, the importer's sun and sky | The Godot script's two moves, same numbers, mapped through the leg's pinned frame map into a Level Sequence and rendered by the stock capture. 420 frames, 30 fps, no motion blur. Script: `unreal-cine.py`. |
+| `unreal-day-to-night.mp4` / `.gif` | Unreal 5.8 | A fixed camera at the media wall while the importer's sun is keyed from mid-afternoon to below the horizon and the nine 400 cd spots are left to carry the room. The camera's exposure bias rides the sequence from 0 to −2.5 EV, the lever mojulo's night preset pulls; the pack does not change. 300 frames, 30 fps. Script: `unreal-cine.py`. |
 
 The web-tier videos are motion recipes: mojulo's `forge_motion` re-renders them from the world
 ref and the shot. The Godot one is a frame-indexed script over the exported pack, so a re-run gives
-the same frames. Each is a representation of the room, not a game.
+the same frames. The Unreal ones are the same idea in Unreal's vocabulary: `unreal-cine.py` builds
+two Level Sequences in the scratch project the export gate wrote, keyed per frame, and the engine's
+stock `-MovieSceneCaptureType` launch renders them to PNG. Each is a representation of the room,
+not a game.
 
-![Godot walkthrough](videos/godot-walkthrough.gif)
+![Unreal walkthrough](videos/unreal-walkthrough.gif)
+
+One preview here; the MP4s and the other GIFs play on the [report page](https://zombico.github.io/lounge-handoff/#motion).
 
 ## Gates
 
@@ -61,7 +72,7 @@ Two gates, never conflated. A machine measures the handoff; a person judges the 
 | Engine | Machine gate | Eyes |
 | --- | --- | --- |
 | Blender Cycles | export driver ran, frames rendered | frames looked at |
-| Unreal 5.8 | seven of seven checks, nine of nine lights, spawn in metres (`gates/unreal-verify.log`) | opened in the editor |
+| Unreal 5.8 | seven of seven checks, nine of nine lights, spawn in metres (`gates/unreal-verify.log`) | opened in the editor; two sequences rendered and their frames looked at |
 | Godot 4.7 | import ×2, one-frame run, materials probe: 16 of 16 surfaces, 9 of 9 lights (`gates/godot-gate.json`) | walked; one frame looked at |
 | Unity 6 | six of six verify checks, materials probe 14 shaded / 2 unlit / 9 lights as declared (`gates/unity-gate.json`) | not opened for this room; whether it reads the spots' candela at a sane brightness is unjudged |
 
@@ -69,6 +80,15 @@ What the eyes found that the machine could not: the black sky, the scale, the de
 facing the door, and a white room in Godot. The last one became a kernel fix (Godot kernel 0.2.1,
 candela to engine energy plus a tonemapped environment); the report tells that story with before
 and after frames.
+
+The Unreal frames added one more. The glTF declares two materials unlit and alpha-blended, the
+contact-shadow stickers under the furniture and the panes, and the Unreal importer swaps all
+sixteen slots onto its opaque lit master, so the stickers draw as solid grey slabs. The gate line
+`materials_unlit — 16 of 16` is the machine confirming that swap. Godot's importer keeps the two
+unlit, which is why its gate says fourteen shaded and two unlit. The oak floor also reads white in
+Unreal: the pack carries the floor as two coplanar layers, the plank base coat and the oak texture,
+and Unreal draws the base coat. Both are importer contracts on the mojulo side, not recipe knobs,
+and neither is fixed in this repository.
 
 ## Re-mint
 
@@ -81,7 +101,7 @@ node scripts/mcp-stdio.mjs call create_sketch --json "$(cat recipe.json)"
 # engine packs, each with its machine gate
 node scripts/export-godot.mjs  --ref <ref> --lit
 node scripts/export-unity.mjs  --ref <ref> --lit
-node scripts/export-unreal.mjs --ref <ref>
+node scripts/export-unreal.mjs --ref <ref> --lit
 node scripts/export-blender.mjs --ref <ref>          # lit is its default base
 # the walkable page
 curl "http://localhost:3001/api/sketches/<ref>/world?download=1&walk=1" -o walk/index.html   # from a server running current source
@@ -89,7 +109,19 @@ curl "http://localhost:3001/api/sketches/<ref>/world?download=1&walk=1" -o walk/
 node scripts/mcp-stdio.mjs call forge_motion --json "$(cat videos/web-orbit.recipe.json)"
 # the Godot walkthrough (writes a frame sequence next to the pack, then ffmpeg it at 30 fps)
 godot --path packs/godot-lit --resolution 1280x720 --script ../../videos/godot-walkthrough.gd
+# the Unreal shots: author the two Level Sequences in the gate's scratch project (no renderer needed) …
+UE="/Users/Shared/Epic Games/UE_5.8/Engine/Binaries/Mac"; PROJ=data/outcomes/<ref>/unreal-scratch/Mojulo.uproject
+"$UE/UnrealEditor-Cmd" "$PROJ" -run=pythonscript -script=videos/unreal-cine.py -unattended -nullrhi -nosplash
+# … then render each with the stock capture (PNG frames out, ffmpeg after; ~40 s for the 420-frame walkthrough)
+"$UE/UnrealEditor" "$PROJ" /Game/MojuloPack/Maps/mojulo-level -game -windowed -ResX=1280 -ResY=720 -ForceRes \
+  -MovieSceneCaptureType="/Script/MovieSceneCapture.AutomatedLevelSequenceCapture" -LevelSequence="/Game/MojuloPack/Cine/LS_Walkthrough" \
+  -MovieFolder=<frames dir> -MovieName="unreal-walkthrough.{frame}" -MovieFormat=PNG -MovieFrameRate=30 -MovieQuality=100 \
+  -MovieWarmUpFrames=60 -MovieCinematicMode=Yes -NoLoadingScreen -NoScreenMessages -ExecCmds="r.MotionBlurQuality 0"
 ```
+
+The `-game` launch needs a rendering Xcode: the Metal toolchain installed and selected, as the
+mojulo Unreal plan records. The `UnrealEditor` launcher hands off to the app bundle and exits at
+once, so a driver waits on the frame count, not the launcher's pid.
 
 ## Provenance
 
@@ -99,6 +131,9 @@ godot --path packs/godot-lit --resolution 1280x720 --script ../../videos/godot-w
   tonemapped environment) and the lounge-review fixes (grade not stored, adult eye height, spawn
   on the floor, the importer defects).
 - Godot 4.7.2, Unreal 5.8, Blender Cycles.
+- The Unreal videos were rendered 2026-09-09 from the scratch project the export gate wrote for
+  this pack (its `MojuloPack/score.json` is byte-identical to `packs/unreal/score.json`), UE 5.8,
+  Lumen, 1280 × 720 at 30 fps, `gates/unreal-cine-author.log` and `gates/unreal-capture.log`.
 
 ## Held back, honestly
 
@@ -106,3 +141,14 @@ godot --path packs/godot-lit --resolution 1280x720 --script ../../videos/godot-w
 - The Godot divisor of fifty candela per unit was calibrated against one room and one pair of eyes.
 - The web-tier pools under the cans are proven numerically, not judged by eye.
 - The Blender GI bake exports faces only, so a baked lounge does not carry the pots yet.
+- In Unreal the contact-shadow stickers draw as grey slabs and the oak floor reads white; both are
+  importer contracts the Unreal leg does not have yet, and the fix lives in mojulo, not here.
+- The day-to-night shot keys the camera's exposure bias down 2.5 EV. That is a cinematography
+  choice, disclosed in `unreal-cine.py`, not a property of the pack or the lights.
+
+## License and credits
+
+Apache-2.0, the same license as mojulo; see [`LICENSE`](LICENSE). The walkable page in `walk/`
+bundles [three.js](https://threejs.org) (MIT, © 2010–2026 Three.js Authors) inline so it needs no
+network. The engine packs contain generated code only; Godot, Unity and Unreal are not
+redistributed here.
