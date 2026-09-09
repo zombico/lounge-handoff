@@ -6,13 +6,15 @@ walkable Godot project and a walkable web page. Everything in this repository is
 agents: the agent builds worlds by conversation, as editable deterministic recipes, and the recipe
 regenerates every file here on every read. Nothing below was authored by hand.
 
-Live: the report at <https://zombico.github.io/lounge-handoff/> and the walkable room at
-<https://zombico.github.io/lounge-handoff/walk/>. The five videos play on the report page under
-"In motion".
+Live: <https://zombico.github.io/lounge-handoff/> is the room itself, a lit first-person walk in
+the browser. The build log, with the gates verbatim and the five videos, is at
+<https://zombico.github.io/lounge-handoff/report/>; mojulo's own unlit view is at
+<https://zombico.github.io/lounge-handoff/walk/>.
 
 | Where to look | What it is |
 | --- | --- |
-| [`index.html`](index.html) | The handoff report: recipe → kernel → three engines → four edits, with the gates verbatim. This is the GitHub Pages front page. |
+| [`index.html`](index.html) | The experience, and the GitHub Pages front page: the lit glTF in three.js with its nine spots, a sun through the panes, shadows and tone mapping. A guided tour on load; click to walk (WASD, mouse), day / dusk / night. One file plus the glTF, three.js pinned from a CDN. |
+| [`report/`](report/) | The build log: recipe → kernel → three engines → four edits, with the gates verbatim and the five videos. On Pages: `/report/`. |
 | [`walk/`](walk/) | The room as a self-contained three.js page, mojulo's own web tier. It opens on the aerial cutaway; the buttons top-left switch to the corner framing, fly, or walk. In walk, WASD moves and the mouse looks. No build step, no server beyond static hosting. On Pages: `/walk/`. |
 | [`videos/`](videos/) | Representation videos, see below. |
 | [`packs/`](packs/) | The engine handoffs: `godot-lit/`, `unity-lit/`, `unreal/`, and the lit glTF on its own. |
@@ -63,7 +65,7 @@ not a game.
 
 ![Unreal walkthrough](videos/unreal-walkthrough.gif)
 
-One preview here; the MP4s and the other GIFs play on the [report page](https://zombico.github.io/lounge-handoff/#motion).
+One preview here; the MP4s and the other GIFs play on the [report page](https://zombico.github.io/lounge-handoff/report/#motion).
 
 ## Gates
 

@@ -2,332 +2,285 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Lounge</title>
+<meta name="description" content="One room from a twelve-line mojulo recipe, lit and walkable in the browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%2316140f%27/%3E%3Crect x=%277%27 y=%2714%27 width=%2718%27 height=%279%27 rx=%272%27 fill=%27%23d9905a%27/%3E%3Ccircle cx=%2716%27 cy=%278%27 r=%272.5%27 fill=%27%23fff1c8%27/%3E%3C/svg%3E">
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #0b0d12; overflow: hidden; font: 14px/1.4 -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; color: #e9e4d8; }
+  canvas { display: block; width: 100%; height: 100%; }
+  #hud { position: fixed; inset: 0; pointer-events: none; }
+  #hud > * { pointer-events: auto; }
+  #brand { position: absolute; left: 18px; bottom: 16px; text-shadow: 0 1px 8px rgba(0,0,0,.6); }
+  #brand b { font-weight: 600; font-size: 15px; letter-spacing: .2px; }
+  #brand span { display: block; font-size: 12px; opacity: .72; margin-top: 2px; }
+  #ctl { position: absolute; top: 14px; right: 14px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  #ctl button { appearance: none; border: 1px solid rgba(255,255,255,.22); background: rgba(12,14,20,.55); color: #e9e4d8; border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 12.5px; cursor: pointer; backdrop-filter: blur(6px); }
+  #ctl button:hover { border-color: rgba(255,255,255,.5); }
+  #ctl button.on { background: rgba(233,228,216,.92); color: #16140f; border-color: transparent; }
+  #ctl .sep { width: 1px; background: rgba(255,255,255,.18); margin: 4px 4px; }
+  #log { position: absolute; right: 18px; bottom: 16px; color: #e9e4d8; opacity: .72; text-decoration: none; font-size: 12.5px; text-shadow: 0 1px 8px rgba(0,0,0,.6); }
+  #log:hover { opacity: 1; }
+  #hint { position: absolute; left: 50%; bottom: 52px; transform: translateX(-50%); font-size: 12.5px; opacity: 0; transition: opacity .4s; text-shadow: 0 1px 8px rgba(0,0,0,.7); white-space: nowrap; }
+  #hint.show { opacity: .8; }
+  #loading { position: absolute; inset: 0; display: grid; place-items: center; background: #0b0d12; transition: opacity .6s; font-size: 13px; letter-spacing: .3px; opacity: .85; }
+  #loading.gone { opacity: 0; pointer-events: none; }
+  @media (max-width: 640px) { #brand span { display: none; } #hint { bottom: 60px; } }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+} }
+</script>
 </head>
 <body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <div id="ctl">
+    <button data-mode="tour" class="on">tour</button>
+    <button data-mode="walk">walk</button>
+    <span class="sep"></span>
+    <button data-tod="day" class="on">day</button>
+    <button data-tod="dusk">dusk</button>
+    <button data-tod="night">night</button>
+  </div>
+  <div id="brand"><b>The Lounge</b><span>a 20 × 24 ft living room from a twelve-line mojulo recipe, lit in your browser</span></div>
+  <a id="log" href="report/">how it was made →</a>
+  <div id="hint"></div>
+  <div id="loading">loading the room…</div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-<title>The Lounge Handoff</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<style>
-  :root {
-    --bg: #f5f1e8;
-    --bg-2: #ebe5d8;
-    --ink: #1f1c17;
-    --ink-2: #5b554a;
-    --ink-3: #8a8275;
-    --line: #d6cdbb;
-    --oak: #a9793f;
-    --leather: #a95a30;
-    --accent: #c98a1e;
-    --accent-ink: #1f1c17;
-    --glow: #f2c46a;
-    --code-bg: #f0eadc;
-    --add: #2f7a4a;
-    --add-bg: #e3f1e6;
-    --del: #a3392b;
-    --del-bg: #f6e1dc;
-    --pass: #2f7a4a;
-    --hold: #a3392b;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #16140f; --bg-2: #1f1c15; --ink: #ece5d6; --ink-2: #b3aa98; --ink-3: #7e7666; --line: #332e24;
-      --oak: #c79955; --leather: #d07a48; --accent: #e9b34a; --accent-ink: #16140f; --glow: #f5cf7c;
-      --code-bg: #1d1a13; --add: #7fc79a; --add-bg: #17291d; --del: #e58d7d; --del-bg: #33201b; --pass: #7fc79a; --hold: #e58d7d;
-      color-scheme: dark;
+// The room is the lit glTF mojulo exported for the engines: y-up, metres, nine KHR spots in
+// candela, an emissive lens per can, the oak floor as an embedded texture, two unlit stickers.
+const GLB = 'packs/lounge-lit.glb';
+const EYE = 1.615;                      // the score's eye, an adult's
+const SPAWN = new THREE.Vector3(3.66, EYE, -4.27);   // the score's spawn, mapped z-up → y-up
+const LOOK = new THREE.Vector3(3.66, 1.45, -0.9);    // the media wall
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(62, 1, 0.05, 200);
+camera.position.copy(SPAWN);
+camera.lookAt(LOOK);
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+// --- the light rig: a sun through the panes, a sky, and the pack's own spots ----------------
+const sun = new THREE.DirectionalLight(0xfff1dc, 3);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 60;
+sun.shadow.camera.left = -9; sun.shadow.camera.right = 9; sun.shadow.camera.top = 9; sun.shadow.camera.bottom = -9;
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+sun.target.position.set(3.66, 0, -4.27);
+scene.add(sun, sun.target);
+const hemi = new THREE.HemisphereLight(0xbcd2ee, 0x6b5a48, 0.8);
+scene.add(hemi);
+const spots = [];   // { light, base } — base is the glTF's candela
+
+function sunAt(azDeg, elDeg) {
+  const az = THREE.MathUtils.degToRad(azDeg), el = THREE.MathUtils.degToRad(elDeg);
+  sun.position.set(3.66 + Math.cos(el) * Math.sin(az) * 30, Math.sin(el) * 30, -4.27 + Math.cos(el) * Math.cos(az) * 30);
+}
+
+const PRESETS = {
+  //          sky background   sun (lux-ish)          sky / ground hemisphere        spots × candela  env    exposure
+  day:   { bg: 0x9fb8d6, sun: { i: 4.6, c: 0xfff3e0, az: 236, el: 31 }, hemi: { i: 1.15, s: 0xd8e2ee, g: 0x8a7560 }, spot: 0.05, env: 0.45, exp: 1.0 },
+  dusk:  { bg: 0xd08a5c, sun: { i: 1.4, c: 0xffb070, az: 250, el: 9 },  hemi: { i: 0.35, s: 0xe0a680, g: 0x3d3128 }, spot: 0.22, env: 0.16, exp: 0.95 },
+  night: { bg: 0x0a0f1c, sun: { i: 0.0, c: 0x8090c0, az: 250, el: -10 }, hemi: { i: 0.06, s: 0x3a4a6a, g: 0x0e0c0a }, spot: 0.15, env: 0.05, exp: 0.85 },
+};
+let preset = 'day';
+function applyPreset(name) {
+  const p = PRESETS[name]; if (!p) return;
+  preset = name;
+  scene.background = new THREE.Color(p.bg);
+  sun.intensity = p.sun.i; sun.color.set(p.sun.c); sunAt(p.sun.az, p.sun.el); sun.visible = p.sun.i > 0;
+  hemi.intensity = p.hemi.i; hemi.color.set(p.hemi.s); hemi.groundColor.set(p.hemi.g);
+  for (const s of spots) s.light.intensity = s.base * p.spot;
+  scene.environmentIntensity = p.env;
+  renderer.toneMappingExposure = p.exp;
+  for (const b of document.querySelectorAll('#ctl [data-tod]')) b.classList.toggle('on', b.dataset.tod === name);
+}
+
+// --- the room ---------------------------------------------------------------------------------
+const colliders = [];          // world AABBs of the furniture
+let floorBox = null;           // where the feet may go
+const loader = new GLTFLoader();
+loader.load(GLB, (gltf) => {
+  const root = gltf.scene;
+  scene.add(root);
+  root.updateMatrixWorld(true);
+  root.traverse((o) => {
+    if (o.isSpotLight) {
+      spots.push({ light: o, base: o.intensity });
+      o.castShadow = true;
+      o.shadow.mapSize.set(512, 512);
+      o.shadow.bias = -0.0005; o.shadow.normalBias = 0.02;
+      o.shadow.camera.near = 0.2; o.shadow.camera.far = 12;
+      o.decay = 2; o.distance = 0;
     }
+    if (!o.isMesh) return;
+    const name = o.name || '';
+    const m = o.material;
+    if (m && m.transparent) {                       // the stickers: contact shadows, panes
+      o.castShadow = false; o.receiveShadow = false; o.renderOrder = 2;
+      m.depthWrite = false;
+      if (name.startsWith('water')) { m.opacity = Math.min(m.opacity, 0.35); m.side = THREE.DoubleSide; }
+      return;
+    }
+    if (name.startsWith('floor_skin_wood') || name.startsWith('floor:skin:wood')) {
+      // the oak grain, one texel layer over the plank coat: the web tier's texel × baked light
+      const tex = m.map;
+      o.material = new THREE.MeshBasicMaterial({ map: tex, blending: THREE.MultiplyBlending, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+      o.renderOrder = 1; o.castShadow = false; o.receiveShadow = false;
+      return;
+    }
+    o.castShadow = !name.startsWith('shell_ceiling') || name.includes('potlight');
+    o.receiveShadow = true;
+    if (m && m.isMeshStandardMaterial) { m.roughness = Math.min(1, Math.max(0.55, m.roughness)); m.envMapIntensity = 1; }
+    if (name.startsWith('asset') && !name.includes('rug')) {
+      const box = new THREE.Box3().setFromObject(o);
+      if (box.max.y - box.min.y > 0.25) colliders.push(box.expandByScalar(0.12));
+    }
+    if (name === 'floor_skin' || name === 'floor:skin') floorBox = new THREE.Box3().setFromObject(o);
+  });
+  if (!floorBox) floorBox = new THREE.Box3(new THREE.Vector3(0.7, 0, -7.9), new THREE.Vector3(6.6, 0, -0.7));
+  applyPreset(preset);
+  document.getElementById('loading').classList.add('gone');
+  ready = true;
+  hint(isTouch ? 'drag to look · pinch to zoom' : 'click to walk · WASD move · mouse look · Esc to release', 5000);
+}, undefined, (e) => { document.getElementById('loading').textContent = 'could not load the room (' + (e && e.message ? e.message : e) + ')'; });
+
+// --- walking ----------------------------------------------------------------------------------
+const isTouch = matchMedia('(pointer: coarse)').matches;
+const lock = new PointerLockControls(camera, canvas);
+const orbit = new OrbitControls(camera, canvas);
+orbit.target.copy(LOOK); orbit.enableDamping = true; orbit.enabled = false;
+orbit.minDistance = 0.3; orbit.maxDistance = 9; orbit.maxPolarAngle = Math.PI * 0.55;
+const keys = new Set();
+window.addEventListener('keydown', (e) => { keys.add(e.code); if (mode === 'tour' && !e.metaKey && !e.ctrlKey && !isTouch && ready) { if (lock.isLocked) setMode('walk'); } });
+window.addEventListener('keyup', (e) => keys.delete(e.code));
+const vel = new THREE.Vector3();
+const RADIUS = 0.32;
+
+function blocked(p) {
+  if (floorBox && (p.x < floorBox.min.x + RADIUS || p.x > floorBox.max.x - RADIUS || p.z < floorBox.min.z + RADIUS || p.z > floorBox.max.z - RADIUS)) return true;
+  for (const b of colliders) if (p.x > b.min.x - RADIUS && p.x < b.max.x + RADIUS && p.z > b.min.z - RADIUS && p.z < b.max.z + RADIUS) return true;
+  return false;
+}
+function walk(dt) {
+  const fwd = new THREE.Vector3(); camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
+  const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0));
+  const dir = new THREE.Vector3();
+  if (keys.has('KeyW') || keys.has('ArrowUp')) dir.add(fwd);
+  if (keys.has('KeyS') || keys.has('ArrowDown')) dir.sub(fwd);
+  if (keys.has('KeyD') || keys.has('ArrowRight')) dir.add(right);
+  if (keys.has('KeyA') || keys.has('ArrowLeft')) dir.sub(right);
+  const speed = keys.has('ShiftLeft') || keys.has('ShiftRight') ? 3.2 : 1.9;
+  if (dir.lengthSq() > 0) dir.normalize().multiplyScalar(speed);
+  vel.lerp(dir, 1 - Math.exp(-dt * 12));
+  const p = camera.position;
+  const nx = p.clone().setX(p.x + vel.x * dt); if (!blocked(nx)) p.x = nx.x; else vel.x = 0;
+  const nz = p.clone().setZ(p.z + vel.z * dt); if (!blocked(nz)) p.z = nz.z; else vel.z = 0;
+  p.y = EYE;
+}
+
+// --- the tour: the same moves the engine videos make, on a loop --------------------------------
+const P = (x, y, z) => new THREE.Vector3(x, y, z);   // mojulo metres, y-up
+const TOUR = [
+  { from: P(3.66, 1.55, -7.25), to: P(3.66, 1.35, -4.9), look: P(3.66, 1.0, -0.9), lookTo: P(3.66, 1.0, -0.9), secs: 7 },        // in from the door
+  { orbit: { c: P(3.66, 0.9, -3.4), r: 2.1, h: 0.75, from: 90, to: 450 }, secs: 16 },                                            // around the seating group
+  { from: P(1.2, 1.5, -1.6), to: P(5.6, 1.5, -1.4), look: P(3.66, 0.7, -5.0), lookTo: P(3.66, 0.7, -5.0), secs: 9 },            // along the media wall
+  { from: P(3.66, 1.35, -4.9), to: P(3.66, 1.55, -7.25), look: P(3.66, 1.0, -0.9), lookTo: P(3.66, 1.6, -0.9), secs: 7 },       // back to the door
+];
+let tourT = 0;
+const ease = (t) => t * t * (3 - 2 * t);
+function tour(dt) {
+  tourT += dt;
+  const total = TOUR.reduce((s, k) => s + k.secs, 0);
+  let t = tourT % total, i = 0;
+  while (t > TOUR[i].secs) { t -= TOUR[i].secs; i++; }
+  const k = TOUR[i], u = t / k.secs;
+  if (k.orbit) {
+    const a = THREE.MathUtils.degToRad(k.orbit.from + (k.orbit.to - k.orbit.from) * u);
+    camera.position.set(k.orbit.c.x + Math.cos(a) * k.orbit.r, k.orbit.c.y + k.orbit.h, k.orbit.c.z + Math.sin(a) * k.orbit.r);
+    camera.lookAt(k.orbit.c);
+  } else {
+    const e = ease(u);
+    camera.position.lerpVectors(k.from, k.to, e);
+    camera.lookAt(new THREE.Vector3().lerpVectors(k.look, k.lookTo, e));
   }
-  :root[data-theme="dark"] {
-    --bg: #16140f; --bg-2: #1f1c15; --ink: #ece5d6; --ink-2: #b3aa98; --ink-3: #7e7666; --line: #332e24;
-    --oak: #c79955; --leather: #d07a48; --accent: #e9b34a; --accent-ink: #16140f; --glow: #f5cf7c;
-    --code-bg: #1d1a13; --add: #7fc79a; --add-bg: #17291d; --del: #e58d7d; --del-bg: #33201b; --pass: #7fc79a; --hold: #e58d7d;
-    color-scheme: dark;
+}
+
+// --- modes ------------------------------------------------------------------------------------
+let mode = 'tour', ready = false;
+function setMode(m) {
+  mode = m;
+  for (const b of document.querySelectorAll('#ctl [data-mode]')) b.classList.toggle('on', b.dataset.mode === m);
+  if (m === 'walk') {
+    if (isTouch) { orbit.enabled = true; camera.position.set(3.66, 1.9, -6.2); orbit.target.copy(LOOK); orbit.update(); hint('drag to look · pinch to move closer', 3000); }
+    else { orbit.enabled = false; if (!lock.isLocked) lock.lock(); camera.position.copy(SPAWN); camera.lookAt(LOOK); vel.set(0, 0, 0); hint('WASD move · mouse look · Shift run · Esc to release', 3500); }
+  } else {
+    orbit.enabled = false; if (lock.isLocked) lock.unlock(); hint('', 0);
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-size: 17px; line-height: 1.55; }
-  main { max-width: 1040px; margin: 0 auto; padding: 48px 24px 96px; }
-  h1, h2, h3 { font-family: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif; text-wrap: balance; margin: 0; }
-  h1 { font-size: clamp(40px, 6vw, 68px); line-height: 0.98; font-weight: 700; letter-spacing: -0.02em; }
-  h2 { font-size: 30px; line-height: 1.1; font-weight: 700; letter-spacing: -0.01em; }
-  h3 { font-size: 19px; font-weight: 700; }
-  p { margin: 0; max-width: 66ch; }
-  a { color: inherit; }
-  .eyebrow { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
-  .lede { font-size: 20px; color: var(--ink-2); max-width: 60ch; }
-  header { display: grid; gap: 20px; padding-bottom: 40px; border-bottom: 1px solid var(--line); }
-  header .meta { display: flex; flex-wrap: wrap; gap: 8px 24px; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; color: var(--ink-2); }
-  section { padding: 56px 0; border-bottom: 1px solid var(--line); display: grid; gap: 24px; }
-  section:last-of-type { border-bottom: 0; }
-  .stage { display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; }
-  .stage .num { font-family: "Bricolage Grotesque", sans-serif; font-size: 44px; font-weight: 500; color: var(--accent); line-height: 1; }
-  .stage .num small { display: block; font: 12px/1.4 "IBM Plex Mono", monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-top: 6px; }
-  .stack { display: grid; gap: 18px; }
-  pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); padding: 16px 18px; overflow-x: auto; font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
-  code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.92em; }
-  .diff .add { background: var(--add-bg); color: var(--add); display: block; }
-  .diff .del { background: var(--del-bg); color: var(--del); display: block; }
-  .diff .ctx { display: block; color: var(--ink-2); }
-  figure { margin: 0; display: grid; gap: 8px; }
-  figure img, figure video { width: 100%; height: auto; display: block; border: 1px solid var(--line); background: #000; }
-  figcaption { font-size: 13.5px; color: var(--ink-2); line-height: 1.45; }
-  figcaption b { color: var(--ink); font-weight: 500; }
-  .jump { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 14px 0 6px; font-size: 13.5px; }
-  .jump a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid transparent; }
-  .jump a:hover { color: var(--ink); border-bottom-color: currentColor; }
-  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; font-size: 15px; align-items: baseline; }
-  .kv dt { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--ink-3); letter-spacing: 0.04em; }
-  .kv dd { margin: 0; }
-  .num-cell { font-variant-numeric: tabular-nums; }
-  .ledger { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 32px; }
-  .ledger ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 15.5px; }
-  .checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-family: "IBM Plex Mono", monospace; font-size: 13px; }
-  .checks li::before { content: "PASS"; color: var(--pass); font-weight: 500; margin-right: 12px; }
-  .engines { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-  .engine { border-top: 3px solid var(--line); padding-top: 12px; display: grid; gap: 8px; font-size: 15px; }
-  .engine.verified { border-top-color: var(--accent); }
-  .engine .state { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
-  .engine.verified .state { color: var(--pass); }
-  .engine.open .state { color: var(--hold); }
-  .callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 18px; color: var(--ink-2); max-width: 66ch; }
-  .rule { font-family: "Bricolage Grotesque", sans-serif; font-size: 22px; font-weight: 500; line-height: 1.25; max-width: 30ch; }
-  .glyph { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--glow); box-shadow: 0 0 10px var(--glow); vertical-align: middle; margin-right: 8px; }
-  @media (max-width: 760px) {
-    .stage { grid-template-columns: 1fr; gap: 8px; }
-    .pair, .trio, .ledger, .engines { grid-template-columns: 1fr; }
-    body { font-size: 16px; }
+}
+lock.addEventListener('unlock', () => { if (mode === 'walk' && !isTouch) hint('click to walk again', 2500); });
+canvas.addEventListener('click', () => { if (!ready) return; if (mode === 'walk' && !isTouch && !lock.isLocked) lock.lock(); else if (mode === 'tour') setMode('walk'); });
+canvas.addEventListener('touchstart', () => { if (ready && mode === 'tour') setMode('walk'); }, { passive: true });
+for (const b of document.querySelectorAll('#ctl [data-mode]')) b.addEventListener('click', () => setMode(b.dataset.mode));
+for (const b of document.querySelectorAll('#ctl [data-tod]')) b.addEventListener('click', () => applyPreset(b.dataset.tod));
+window.addEventListener('keydown', (e) => { if (e.code === 'Digit1') applyPreset('day'); if (e.code === 'Digit2') applyPreset('dusk'); if (e.code === 'Digit3') applyPreset('night'); if (e.code === 'KeyT') setMode(mode === 'tour' ? 'walk' : 'tour'); });
+
+let hintTimer = 0;
+function hint(text, ms) {
+  const el = document.getElementById('hint'); clearTimeout(hintTimer);
+  el.textContent = text; el.classList.toggle('show', !!text);
+  if (ms) hintTimer = setTimeout(() => el.classList.remove('show'), ms);
+}
+
+// --- frame ------------------------------------------------------------------------------------
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (canvas.width !== Math.floor(w * renderer.getPixelRatio()) || canvas.height !== Math.floor(h * renderer.getPixelRatio())) {
+    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
   }
-</style>
-<main>
-  <header>
-    <div class="eyebrow">mojulo · a 3D factory for agents · one room, end to end</div>
-    <h1>The Lounge Handoff</h1>
-    <p class="lede">Mojulo is a 3D factory for agents: an agent builds worlds, objects and games by conversation, as editable recipes on your own machine, that ship as a game or as a printed object. This page follows one real room, ref <code>sk_lkypzdim4y</code>, from a twelve-line recipe to a lit Cycles frame, a life-size Unreal level and a walkable Godot project, then through four edits, using nothing but the files the pipeline itself wrote.</p>
-    <nav class="jump"><a href="#recipe">recipe</a><a href="#kernel">kernel</a><a href="#handoff">handoff</a><a href="#outputs">outputs</a><a href="#motion">videos</a><a href="#iteration">edits</a><a href="#proves">claims</a><a href="walk/">walk the room ↗</a></nav>
-    <div class="meta"><span>20 × 24 ft living room</span><span>seed 7</span><span>UE 5.8 · Blender Cycles · Godot 4.7</span><span>commit 14c3197 · 2026-09-06</span><span>Godot kernel 0.2.1 + lounge-review fixes · 2026-09-08 · in the working tree</span></div>
-  </header>
+}
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  resize();
+  if (ready) {
+    if (mode === 'tour') tour(dt);
+    else if (isTouch) orbit.update();
+    else if (lock.isLocked) walk(dt);
+  }
+  renderer.render(scene, camera);
+});
 
-  <section id="recipe">
-    <div class="stage">
-      <div class="num">1<small>the recipe</small></div>
-      <div class="stack">
-        <h2>Everything starts as a small, editable recipe</h2>
-        <p>The manifest is the artifact. This is the entire room, stored as one row, and nothing below it is authored by hand: walls, windows, the door, the furniture, the light and every exported file are regenerated from these lines on every read. Seeded dice only, no clock, so the same recipe gives the same bytes, and a kernel's output for these lines is a compatibility promise the tests hold it to.</p>
-        <pre>{
-  "title": "One-room house plan — living",
-  "kind": "floorplan",
-  "width": 24, "height": 28,
-  "rooms": [{ "x": 2, "y": 2, "w": 20, "h": 24, "glyph": "L" }],
-  "doors": [{ "x": 12, "y": 26, "room": 0, "edge": "S" }],
-  "furnish": true,
-  "view": "cutaway",
-  "seed": 7,
-  "potLights": true
-}</pre>
-        <p class="callout">The unit is feet, because house plans are drawn in feet. The kind knows that, and every export downstream scales by 0.3048 so an engine walker sees the room at life size. A 10 ft ceiling arrives in Unreal as 3.05 m.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="kernel">
-    <div class="stage">
-      <div class="num">2<small>what is mojulo's</small></div>
-      <div class="stack">
-        <h2>The kernel turns the recipe into a world</h2>
-        <p>This part is mojulo's own, and it is where the room actually lives. A structurizer builds walls and cuts openings from the cells and the door. An arranger reads the glyph <code>L</code> and lays out a living room: media unit on the far wall, sofa across from it, coffee table, two club chairs, a rug, a floor lamp. A realism pass adds oak boards with real grain, contact shadows under each piece, a ceiling in the walkable tier, and the pot lights.</p>
-        <figure>
-          <img src="renders/report/01.jpg" alt="mojulo's own dollhouse view of the lounge: oak floor, rug, couch, two armchairs, coffee table, floor lamp, windows in three walls">
-          <figcaption><b>mojulo's own view.</b> The web tier is unlit by design: every colour you see is baked into the vertices, so the same room draws in a browser, a headset, or a bot with no lighting setup. The pools under the pot lights are part of that bake.</figcaption>
-        </figure>
-        <div class="kv">
-          <dt>structurizer</dt><dd>cells + door → wall graph → extruded walls, window and door cuts, floor slab, ceiling</dd>
-          <dt>arranger</dt><dd>glyph L → seating group facing the media wall, sized to this room's share of floor</dd>
-          <dt>light</dt><dd>directional Lambert baked per face; pot lights add per-corner pools on the floor and lamps on the furniture</dd>
-          <dt>dice</dt><dd>one seeded generator; no clock, no randomness, so a re-render is byte-identical</dd>
-        </div>
-        <p class="rule">"3D" is a pipeline-position claim, never a fidelity claim. Mojulo authors truth at home; the edge tool consumes it. Never a fidelity rival, never just an exporter.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="handoff">
-    <div class="stage">
-      <div class="num">3<small>the handoff</small></div>
-      <div class="stack">
-        <h2>One export, three files, every engine</h2>
-        <p>One recipe leaves through many doors: Godot, Unity and Unreal packs, Blender, plain glTF, and STL, 3MF and USD for the print and DCC sides. This page follows the engine door. An export writes the world as a standard glTF binary plus a small engine score, and wraps them with an importer script and a guide. No engine-specific geometry is authored anywhere; the lights, the glowing lenses and the unit scale travel inside the glTF as standard extensions the importers already understand.</p>
-        <div class="pair">
-          <div class="stack">
-            <h3>model.glb</h3>
-            <dl class="kv">
-              <dt>size</dt><dd class="num-cell">694 KB · 26 nodes · 10,694 triangles</dd>
-              <dt>materials</dt><dd>16, real PBR when exported lit; the lens is emissive</dd>
-              <dt>lights</dt><dd>9 spots, 400 candela, 30°/50° cones, via KHR_lights_punctual</dd>
-              <dt>root</dt><dd>uniform scale 0.3048, so importers receive metres</dd>
-              <dt>texture</dt><dd>the oak floor, embedded as its albedo</dd>
-            </dl>
-          </div>
-          <div class="stack">
-            <h3>score.json</h3>
-            <pre>"units": "1 mojulo unit = 1 meter",
-"metersPerUnit": 0.3048,
-"spawn": [3.658, 4.267, 1.280],
-"eye": 1.280,
-"lights": [ { "type": "spot", "position": [2.134, 2.334, 3.018],
-              "intensity": 400, "color": [1, 0.93, 0.82], … } × 9 ],
-"ledger": { "lights_carried": { "count": 9 },
-            "textures_carried": { "count": 1 },
-            "sky_approximated": …, "cameras_data_only": … }</pre>
-          </div>
-        </div>
-        <p class="callout">The ledger is the honest half of every handoff: it lists what did not travel. Here the sky dome is dropped and approximated with the engine's own sky, and the two authored camera framings ride as data only. Nothing is silently lost.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="outputs">
-    <div class="stage">
-      <div class="num">4<small>the outputs</small></div>
-      <div class="stack">
-        <h2>The same recipe, seen by each renderer</h2>
-        <div class="engines">
-          <div class="engine verified"><span class="state">machine gate ran · frames looked at</span><h3>Blender · Cycles</h3><p>The Blender driver imports the lit glTF, adds a sun and sky or a studio rig, and keeps the frame. Its importer reads the nine spots and the emissive lens on its own.</p></div>
-          <div class="engine verified"><span class="state">machine gate ran · opened in the editor · two shots rendered</span><h3>Unreal 5.8</h3><p>A headless editor imports the pack, builds the level, spawns the walker's start, and a verify pass checks seven facts. Interchange imported all nine lights itself. Two Level Sequences were then rendered from that same level by the engine's stock capture, below; the first frames caught an importer bug, which became the fourth edit.</p></div>
-          <div class="engine verified"><span class="state">machine gate ran · walked, one frame looked at</span><h3>Godot 4.7</h3><p>Imports the KHR lights itself; the pack's own kernel now reads them as candela. Headless import, a one-frame run and a materials probe passed, then the room was walked. The first walk found a white room, which became the third edit below.</p></div>
-          <div class="engine open"><span class="state">machine gate ran · not opened</span><h3>Unity 6</h3><p>Same pack shape, with a walker that scales to the score's eye height. Six verify checks and the materials probe pass, fourteen shaded and two unlit as the file declares. Nobody has looked at it in the editor, so no claim about how it reads.</p></div>
-        </div>
-        <div class="pair">
-          <figure><img src="renders/report/02.jpg" alt="Cycles render of the lounge in daylight with three recessed lights glowing in the ceiling"><figcaption><b>Cycles, day.</b> Sun at 35° through the panes, nine cans in the ceiling with lit lenses, oak grain from the recipe's own texture tile.</figcaption></figure>
-          <figure><img src="renders/report/03.jpg" alt="Cycles render of the lounge at night, lit only by the nine ceiling spots"><figcaption><b>Cycles, night.</b> Sun down, sky nearly off. Nine 50° cones on a 6 ft grid under a 10 ft ceiling overlap by design, so the room washes evenly rather than pooling.</figcaption></figure>
-        </div>
-        <h3>The Unreal machine gate, verbatim</h3>
-        <ul class="checks">
-          <li>scene_exists — /Game/MojuloPack/Maps/mojulo-level</li>
-          <li>world_instance — 34 actors</li>
-          <li>collider_count — 0 vs 0</li>
-          <li>spawn_marker — x 365.76, y −426.72, z 96.00 cm</li>
-          <li>ground_plane</li>
-          <li>lights_carried — 9 local lights vs 9 in the score</li>
-          <li>materials_unlit — 16 of 16 static-mesh slots</li>
-        </ul>
-        <p>The spawn marker is the unit fix made visible: 12 ft and 14 ft became 3.66 m and 4.27 m, and the marker sits a capsule's half-height above the floor. Before the fix the same room landed at 3.28× life size, a 10 m ceiling over a 1.8 m character. A review of the assembled repository later caught the other half: the eye was 4.2 ft, a child's, and the spawn carried the eye height as its z. The eye is now 5.3 ft and the spawn is the feet on the floor. The machine gate could not see that; a person opening the level could. Gates advise and stamp, none of them refuse, and the pipeline keeps the two kinds separate on purpose.</p>
-        <div class="pair">
-          <figure><img src="renders/unreal-after-leg-0.4.2.jpg" alt="Unreal 5.8 frame from inside the lounge under Lumen: oak floor, media console and television, the nine ceiling cans lit, windows to a blue sky"><figcaption><b>Unreal 5.8, Lumen, importer leg 0.4.2.</b> Frame rendered by the engine from the walker's spawn, looking at the media wall. Same glTF as Cycles and Godot; the sun and sky are the importer's own rig. The first render of this view had a grey slab under every piece; the fourth edit below is why this one does not. The floor is the pack's plank coat, tan in Godot and white here under Unreal's sun and auto-exposure; the oak grain of the Cycles frames sits a millimetre beneath it and no engine draws it, see held back.</figcaption></figure>
-          <figure><img src="renders/unreal-night.jpg" alt="Unreal 5.8 frame of the lounge at night, the room dim and warm under the nine pot lights"><figcaption><b>Unreal 5.8, night.</b> Last frame of the day-to-night shot: sun below the horizon, sky light following it down, the nine 400 cd spots carrying the room. Compare the Cycles night frame above.</figcaption></figure>
-        </div>
-        <figure>
-          <img src="renders/report/04.jpg" alt="Godot 4.7 frame from inside the lounge: oak floor, the sofa's back, floor lamp, windows and door, soft pools under the ceiling cans">
-          <figcaption><b>Godot 4.7, kernel 0.2.1.</b> Frame saved by the engine itself from the walker's spawn, looking at the door. Same glTF as Cycles and Unreal; the pools under the cans are Godot's own lights, not the web tier's baked ones.</figcaption>
-        </figure>
-        <h3>The Godot machine gate, verbatim</h3>
-        <ul class="checks">
-          <li>import ×2 — exit 0, .godot present</li>
-          <li>one_frame main — exit 0, no script errors</li>
-          <li>surfaces_built — 16 of 16</li>
-          <li>unlit_as_declared — 2 of 2</li>
-          <li>shaded_as_declared — 14 of 14</li>
-          <li>lights_as_declared — 9 of 9</li>
-          <li>locomotion_probe — skipped, a world carries no player row</li>
-        </ul>
-        <p>This gate also passed on kernel 0.2.0, when the same frame was solid white. It measures whether the importer built what the file declares: surfaces, shading, light count. It cannot see exposure. A person pressing play could, in one second.</p>
-        <h3 id="motion">In motion</h3>
-        <p>Five representation videos, none of them a game: the web tier orbiting and flying through the cutaway, Godot walking the lit pack, and Unreal walking it and then turning the day off. Each is a recipe or a frame-indexed script in <code>videos/</code>, so a re-run gives the same frames.</p>
-        <div class="trio">
-          <figure><video controls muted loop playsinline preload="metadata" poster="videos/web-orbit-poster.jpg" src="videos/web-orbit.mp4"></video><figcaption><b>Web tier, orbit.</b> 48 frames over a full turn of the cutaway. The reference performance.</figcaption></figure>
-          <figure><video controls muted loop playsinline preload="metadata" poster="videos/web-flythrough-poster.jpg" src="videos/web-flythrough.mp4"></video><figcaption><b>Web tier, flythrough.</b> Over the south wall, in at the door, to the seating group.</figcaption></figure>
-          <figure><video controls muted loop playsinline preload="metadata" poster="videos/godot-walkthrough-poster.jpg" src="videos/godot-walkthrough.mp4"></video><figcaption><b>Godot 4.7, walkthrough.</b> Push-in from the door, then an eye-height orbit of the seating group. Kernel 0.2.1.</figcaption></figure>
-        </div>
-        <div class="pair">
-          <figure><video controls muted loop playsinline preload="metadata" poster="videos/unreal-walkthrough-poster.jpg" src="videos/unreal-walkthrough.mp4"></video><figcaption><b>Unreal 5.8, walkthrough.</b> The Godot script's two moves, same numbers, mapped through the leg's pinned frame map into a Level Sequence and rendered by the stock capture at 30 fps. Lumen, the importer's sun and sky, no motion blur. Importer leg 0.4.2, after the fourth edit.</figcaption></figure>
-          <figure><video controls muted loop playsinline preload="metadata" poster="videos/unreal-day-to-night-poster.jpg" src="videos/unreal-day-to-night.mp4"></video><figcaption><b>Unreal 5.8, day to night.</b> A fixed camera at the media wall; the importer's own sun is keyed from mid-afternoon to below the horizon over ten seconds and the room is left to the nine spots. Auto-exposure would have held the room at noon all the way down, so the camera's exposure bias rides the sequence from 0 to −2.5 EV, the lever mojulo's own night preset pulls. The pack does not change.</figcaption></figure>
-        </div>
-        <p>The Unreal shots are authored by <code>videos/unreal-cine.py</code> under the editor's Python commandlet, which needs no renderer, and rendered by a <code>-game</code> launch with <code>-MovieSceneCaptureType</code>: the sequence, the frame rate and the output folder on the command line, PNG frames out, ffmpeg after. The walkthrough rendered its 420 frames in forty seconds. The authoring log and one capture log are in <code>gates/</code>, verbatim.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="iteration">
-    <div class="stage">
-      <div class="num">5<small>iteration</small></div>
-      <div class="stack">
-        <h2>Two kinds of edit, one regeneration</h2>
-        <p>Because the room is a recipe, changing it never means re-modelling. There are two places an edit can land, and both regenerate everything downstream, then re-run the gates.</p>
-
-        <h3><span class="glyph"></span>Edit the recipe: add the pot lights</h3>
-        <p>The operator asked for ceiling lights. That is one field on the recipe. The kernel lays a 3 × 3 grid per room, six feet apart, inset from the walls, and everything below picks it up: cans and pools in the web tier, spots and emissive lenses in the glTF, a <code>lights</code> block on the score, nine actors in Unreal.</p>
-        <pre class="diff"><span class="ctx">  "furnish": true,</span><span class="ctx">  "view": "cutaway",</span><span class="ctx">  "seed": 7,</span><span class="del">- }</span><span class="add">+ "potLights": true</span><span class="add">+ }</span></pre>
-        <div class="pair">
-          <figure><img src="renders/report/05.jpg" alt="Cycles render before pot lights: plain ceiling"><figcaption><b>Before.</b> The lit export with the oak floor, a plain ceiling.</figcaption></figure>
-          <figure><img src="renders/report/06.jpg" alt="Cycles render after pot lights: glowing cans in the ceiling"><figcaption><b>After.</b> One recipe field later. Same seed, same furniture, same camera.</figcaption></figure>
-        </div>
-
-        <h3><span class="glyph"></span>Fix the kernel: turn the couch to the television</h3>
-        <p>The sofa faced the door. That was not a recipe choice, it was a kernel bug, and the recipe does not change at all. The arranger had never given the sofa a facing, and the couch was the one furniture asset built in world space, so the facing would have been ignored anyway. Two lines in the kernel, and every lounge in every floorplan re-renders seated toward the screen. The legacy characterization hashes changed and were re-pinned with a dated note, which is the one place a kernel fix has to declare itself.</p>
-        <pre class="diff"><span class="ctx">  // floorplan-glyphs.js · arrangeLiving</span><span class="del">- { type: 'sofa', asset: 'modern-couch', anchor: [j(0.5, 0.04), 0.72], … },</span><span class="add">+ { type: 'sofa', asset: 'modern-couch', anchor: [j(0.5, 0.04), 0.72], …, facing: 'S' },</span><span class="ctx"> </span><span class="ctx">  // room-assets.js · the modern-couch maker</span><span class="del">- buildModernCouchWorkbenchManifest({ x: cx, y: cy, z: base[0][2], w, d, h })   // world space, ignores the corner spin</span><span class="add">+ local: true,</span><span class="add">+ buildModernCouchWorkbenchManifest({ x: 0, y: 0, z: 0, w, d, h })                // local frame, mapped through the footprint like every other piece</span></pre>
-        <div class="pair">
-          <figure><img src="renders/report/07.jpg" alt="Cycles render from the television wall: the couch's back faces the camera"><figcaption><b>Before.</b> Seen from the television wall, the couch shows its back. Measured: backrest at y 18.0 ft in a room whose screen sits at y 2.5.</figcaption></figure>
-          <figure><img src="renders/report/08.jpg" alt="Cycles render from the television wall: the couch's front faces the camera"><figcaption><b>After.</b> Same recipe, same seed. Backrest at y 20.5. The armchairs were already right, which is how the bug was isolated.</figcaption></figure>
-        </div>
-        <h3><span class="glyph"></span>Fix the kernel: teach the Godot leg what a candela is</h3>
-        <p>The first walk in Godot was a white room. The glTF says 400 candela per spot, which is a real downlight; Unreal reads candela through its exposure and Blender converts it to watts, but Godot's importer copies the number straight into a unitless lamp energy where 1.0 is normal, leaves the range at its 4096 m default, and the pack shipped no environment or tonemapper to catch it. Four hundred times too bright. Not a recipe knob and not a taste question: a unit contract the Godot leg never had. The fix lives in the pack's own kernel, next to the material fixup that already runs after import, and only for worlds that carry lights, because a tonemapper would also remap the unlit packs whose reference look is the web build.</p>
-        <pre class="diff"><span class="ctx">  // kernel/level.gd · _ready</span><span class="ctx">    _fix_materials()</span><span class="add">+   if _fix_lights() &gt; 0:</span><span class="add">+       _build_environment()</span><span class="ctx"> </span><span class="ctx">  // kernel/level.gd · the importer's number is candela, Godot's is a lamp</span><span class="add">+ const CANDELA_PER_ENERGY := 50.0     // read against the Cycles frame of this room</span><span class="add">+ l.light_energy = l.light_energy / CANDELA_PER_ENERGY</span><span class="add">+ if l is SpotLight3D and l.spot_range &gt; 1000.0: l.spot_range = 12.0</span><span class="add">+ env.tonemap_mode = Environment.TONE_MAPPER_AGX</span><span class="ctx"> </span><span class="ctx">  // kernel/VERSION</span><span class="del">- 0.2.0</span><span class="add">+ 0.2.1</span></pre>
-        <div class="pair">
-          <figure><img src="renders/report/09.jpg" alt="Godot frame of the lounge with every lit surface clipped to white"><figcaption><b>Before.</b> Kernel 0.2.0. Nine spots at energy 400, no tonemapper. Every lit surface clips; only the window glass and the ceiling keep a colour. The machine gate passed this frame.</figcaption></figure>
-          <figure><img src="renders/report/10.jpg" alt="Godot frame of the lounge correctly exposed after the kernel fix"><figcaption><b>After.</b> Kernel 0.2.1. Same pack, same lights, same spawn. Candela divided by fifty, a 12 m range, AgX over a sky-toned ground. Compare the Cycles night frame above.</figcaption></figure>
-        </div>
-        <h3><span class="glyph"></span>Fix the importer: let the Unreal leg keep a sticker's blend</h3>
-        <p>The first Unreal frames rendered for this page had a solid grey slab under every piece of furniture. The glTF declares two of its sixteen materials unlit and alpha-blended: the web tier's stickers, the contact shadows under the furniture and the window panes, whose darkness and transparency ride the vertex colour's alpha. The Unreal importer swapped every slot onto its opaque lit master, alpha ignored, so the shadows drew as grey blocks and the panes as solid glass. The gate line <code>materials_unlit — 16 of 16</code> is the machine confirming the swap; Godot's gate says fourteen shaded and two unlit because its importer keeps them. Not a recipe knob: an importer contract the Unreal leg never had, the same shape as the candela one. The fix reads the glTF's own material table and gives those slots a third master, unlit and translucent, with opacity from the vertex alpha. The gate count does not move; the picture does. One thing the fix did not touch: the floor. The pack carries it as two layers, an untextured plank coat a millimetre above the oak texture, and both engines draw the coat; the first render after the fix showed the oak only because the coat's mesh had not finished building in a fresh project, and a re-run draws it. That stays held back.</p>
-        <pre class="diff"><span class="ctx">  # import_mojulo.py · the swap, after Interchange</span><span class="add">+ def sticker_material_names(glb_path):      # KHR_materials_unlit + alphaMode BLEND, read off the GLB's JSON chunk</span><span class="add">+ def ensure_sticker_master():               # M_MojuloSticker: unlit, translucent, two-sided,</span><span class="add">+     ...                                    # emissive = texture × vertex colour, opacity = vertex alpha × texture alpha</span><span class="ctx"> </span><span class="ctx">  for i, slot in enumerate(asset.get_editor_property('static_materials')):</span><span class="add">+     if sticker_master is not None and is_sticker_slot(cur, asset, stickers):</span><span class="add">+         asset.set_material(i, unlit_instance(sticker_master, first_texture(cur), sticker_cache, 'MI_MojuloSticker_'))</span><span class="add">+         continue</span><span class="ctx">      if is_mojulo_material(cur) or is_emissive_slot(cur): continue</span><span class="ctx">      asset.set_material(i, unlit_instance(master, first_texture(cur), cache))</span><span class="ctx"> </span><span class="ctx">  // unreal-project.js</span><span class="del">- export const UNREAL_LEG_VERSION = '0.4.1';</span><span class="add">+ export const UNREAL_LEG_VERSION = '0.4.2';</span></pre>
-        <div class="pair">
-          <figure><img src="renders/unreal-before-leg-0.4.1.jpg" alt="Unreal frame of the lounge with grey slabs under the furniture and a white plank floor"><figcaption><b>Before.</b> Leg 0.4.1. The contact-shadow stickers drawn opaque: grey blocks under the chairs and the table, solid panes. The machine gate passed this frame, sixteen of sixteen.</figcaption></figure>
-          <figure><img src="renders/unreal-after-leg-0.4.2.jpg" alt="Unreal frame of the lounge with an oak floor and soft contact shadows"><figcaption><b>After.</b> Leg 0.4.2. Same pack, same level, same camera, rendered by the same capture as the videos. Two slots on the sticker master, thirteen on the lit one, one emissive lens kept. Soft shadows, sky in the panes. The gate still says sixteen of sixteen.</figcaption></figure>
-        </div>
-        <p class="callout">The operator owns the recipe. The maintainer owns the kernel and the importer. Neither ever touches an export by hand, and the gates run the same way for both.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="proves">
-    <div class="stage">
-      <div class="num">6<small>what this proves</small></div>
-      <div class="stack">
-        <h2>Claims this room supports, and claims it does not</h2>
-        <div class="ledger">
-          <div class="stack">
-            <h3>Supported, with a machine behind it</h3>
-            <ul>
-              <li>A recipe edit propagates deterministically to every handoff. The full suite passes with pins for the cans, the pools, the glTF lights, the emissive lens, the root scale and the scaled score, all landed in commit 14c3197.</li>
-              <li>Unreal 5.8 accepts all of it through its stock importer. Seven of seven checks, nine of nine lights, spawn in metres. No mojulo code runs inside the engine.</li>
-              <li>Godot 4.7 walks the room from its stock importer plus the pack's own kernel: import, one-frame run and materials probe clean, nine of nine lights. The kernel converts candela to the engine's unit; the engine does the rest.</li>
-              <li>The glTF is a faithful carrier: lights, emissive materials and units travel in standard extensions, and the reader undoes the unit scale so a bake or a Blender round trip comes back in the world's own units.</li>
-              <li>One recipe field adds lights that show up as geometry in the browser, as light sources in Blender, and as spot lights in Unreal, with no per-engine authoring.</li>
-            </ul>
-          </div>
-          <div class="stack">
-            <h3>Held back, honestly</h3>
-            <ul>
-              <li>Unity passes its machine gate but nobody has opened this room in it, so no in-engine claim, and whether it reads the spots' candela at a sane brightness is unjudged.</li>
-              <li>The Godot kernel fix is in the working tree, not yet committed. Its divisor of fifty was calibrated against one room and one pair of eyes; other lit worlds may want the knob.</li>
-              <li>A review of the assembled repository found this room carrying two manifest hashes, because the floorplan mint stored its quality grade inside the recipe and a stale grade was written back. The grade is no longer stored, and every pack now cites one hash, <code>fc95e0c38dd696a1</code>.</li>
-              <li>The web-tier pools are proven numerically, brighter under a can than at the wall; no one has judged them by eye.</li>
-              <li>The Blender GI bake exports faces only, so a baked lounge does not carry the pots yet.</li>
-              <li>400 candela is a real downlight, which means daylight swamps it in the Cycles day frame. That part is still taste, and still a knob.</li>
-              <li>Walking the room is export, then run: two commands, not one.</li>
-              <li>The Unreal importer fix (leg 0.4.2) is in the mojulo working tree, not yet committed, like the Godot one. Its sticker master is unlit by construction, so a lit world's stickers do not take the sun; that matches the web tier's contract and may not match every taste.</li>
-              <li>No engine pack shows the oak grain. The glTF carries the floor as an untextured plank coat a millimetre above the textured oak layer; Godot and Unreal draw the coat, tan in one and white in the other, and only the Cycles frames show the grain. Which layer should win is a mojulo question, not an importer one.</li>
-              <li>The Unreal pack's glTF now differs from the Godot and Unity packs in one buffer: the oak floor's V coordinates, flipped by a mojulo change so wrapped textures land right way up in every engine. The Godot and Unity re-exports of the same evening still carry the earlier orientation, and why the two legs did not pick the change up is not yet traced.</li>
-              <li>The day-to-night shot keys an exposure bias down 2.5 EV. That is the camera operator's choice, disclosed in the script, not a property of the pack or the lights.</li>
-            </ul>
-          </div>
-        </div>
-        <p class="rule">Two gates, never conflated: a machine measures the handoff, a person judges the picture. The machine gate ran clean on every export of this room. What the eyes found: the black sky, the scale, the dead lens, the couch, a white room in Godot, and grey slabs in Unreal.</p>
-      </div>
-    </div>
-  </section>
-</main>
+// a small hook for the headless QA pass that took this page's screenshots
+window.__lounge = {
+  get ready() { return ready; },
+  setPreset: applyPreset,
+  setMode,
+  snap(pos, look) { setMode('still'); camera.position.set(pos[0], pos[1], pos[2]); camera.lookAt(look[0], look[1], look[2]); },
+  tune(o) { if ('sun' in o) sun.intensity = o.sun; if ('hemi' in o) hemi.intensity = o.hemi; if ('env' in o) scene.environmentIntensity = o.env; if ('exp' in o) renderer.toneMappingExposure = o.exp; if ('az' in o) sunAt(o.az, o.el ?? 38); if ('spot' in o) for (const s of spots) s.light.intensity = s.base * o.spot; },
+};
+</script>
 </body>
 </html>
