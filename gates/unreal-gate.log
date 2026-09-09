@@ -1,5 +1,5 @@
 [export-unreal] resolved 'sk_lkypzdim4y' (kind floorplan) — GLB 695532 bytes, 0 animations
-[export-unreal] emitted 7 files (leg v0.4.1) → /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unreal
+[export-unreal] emitted 7 files (leg v0.4.2) → /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unreal
 [export-unreal] machine gate — copying pack into MojuloPack/
 [export-unreal] machine gate — headless import + level build (first run compiles shaders; may take minutes)
 [export-unreal] machine gate — verify pass

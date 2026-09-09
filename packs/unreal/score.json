@@ -225,6 +225,14 @@
     "lights_carried": {
       "count": 9,
       "note": "recessed pot lights ride the GLB as KHR_lights_punctual spots (candela) and the score carries them too; Blender, Godot and Unity import them from the GLB (Godot converts candela to its lamp energy in the pack kernel), the Unreal importer spawns SpotLights from score.json when Interchange brings none"
+    },
+    "contract": {
+      "tier": "T0",
+      "next": "T1",
+      "missing_for_next": [
+        "out_normals — 99.9% of faces carry outNormal (a bake reads winding from it)"
+      ],
+      "note": "declares T0 (coherent); for T1 (baked): out_normals — 99.9% of faces carry outNormal (a bake reads winding from it)"
     }
   }
 }

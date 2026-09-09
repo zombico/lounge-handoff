@@ -4,7 +4,7 @@
   "scope": "world",
   "dir": "/Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unreal",
   "manifest_hash": "fc95e0c38dd696a1",
-  "leg": "0.4.1",
+  "leg": "0.4.2",
   "glb": {
     "bytes": 695532,
     "nodes": 27,
@@ -14,7 +14,7 @@
     "entities": 0
   },
   "files": 7,
-  "total_bytes": 741974,
+  "total_bytes": 751899,
   "portability": {
     "portable": false,
     "flags": [
@@ -31,6 +31,14 @@
     "lights_carried": {
       "count": 9,
       "note": "recessed pot lights ride the GLB as KHR_lights_punctual spots (candela) and the score carries them too; Blender, Godot and Unity import them from the GLB (Godot converts candela to its lamp energy in the pack kernel), the Unreal importer spawns SpotLights from score.json when Interchange brings none"
+    },
+    "contract": {
+      "tier": "T0",
+      "next": "T1",
+      "missing_for_next": [
+        "out_normals — 99.9% of faces carry outNormal (a bake reads winding from it)"
+      ],
+      "note": "declares T0 (coherent); for T1 (baked): out_normals — 99.9% of faces carry outNormal (a bake reads winding from it)"
     },
     "textures_carried": {
       "count": 1,
@@ -61,7 +69,7 @@
         "PASS scene_exists — /Game/MojuloPack/Maps/mojulo-level",
         "PASS world_instance — 34 actors",
         "PASS collider_count — 0 vs 0",
-        "PASS spawn_marker — <Struct 'Vector' (0x3adc7f670) {x: 365.760000, y: -426.720000, z: 96.000000}>",
+        "PASS spawn_marker — <Struct 'Vector' (0x3a7d5b8a0) {x: 365.760000, y: -426.720000, z: 96.000000}>",
         "PASS ground_plane",
         "PASS lights_carried — 9 local lights vs 9 in the score",
         "PASS materials_unlit — 16 of 16 static-mesh slots"

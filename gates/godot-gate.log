@@ -1,5 +1,5 @@
 [export-godot] resolved 'sk_lkypzdim4y' (kind floorplan) — GLB 695532 bytes, 0 animations
-[export-godot] emitted 14 files (kernel 0.2.1) → /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/godot-lit
+[export-godot] emitted 14 files (kernel 0.2.1) → /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/godot
 [export-godot] machine gate — headless import (twice, per the fresh-project wart)
 [export-godot] machine gate — one-frame run: main
 [export-godot] machine gate — materials probe (lit export; file declares 14 shaded + 2 unlit primitives, 9 lights)

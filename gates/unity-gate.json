@@ -2,7 +2,7 @@
   "ok": true,
   "ref": "sk_lkypzdim4y",
   "scope": "world",
-  "dir": "/Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unity-lit",
+  "dir": "/Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unity",
   "manifest_hash": "fc95e0c38dd696a1",
   "leg": "0.4.0",
   "glb": {
@@ -14,7 +14,7 @@
     "entities": 0
   },
   "files": 25,
-  "total_bytes": 763430,
+  "total_bytes": 764373,
   "portability": {
     "portable": false,
     "flags": [
@@ -30,7 +30,15 @@
     },
     "lights_carried": {
       "count": 9,
-      "note": "recessed pot lights ride the GLB as KHR_lights_punctual spots (candela); Blender / Godot import them, the Unreal importer spawns SpotLights from score.json when Interchange brings none"
+      "note": "recessed pot lights ride the GLB as KHR_lights_punctual spots (candela) and the score carries them too; Blender, Godot and Unity import them from the GLB (Godot converts candela to its lamp energy in the pack kernel), the Unreal importer spawns SpotLights from score.json when Interchange brings none"
+    },
+    "contract": {
+      "tier": "T0",
+      "next": "T1",
+      "missing_for_next": [
+        "out_normals — 99.9% of faces carry outNormal (a bake reads winding from it)"
+      ],
+      "note": "declares T0 (coherent); for T1 (baked): out_normals — 99.9% of faces carry outNormal (a bake reads winding from it)"
     },
     "textures_carried": {
       "count": 1,
@@ -115,5 +123,5 @@
       }
     }
   },
-  "eyes_gate": "follow /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unity-lit/IMPORT-GUIDE.md — chunks ① project → ⑤ play; the guide is the no-Unity-here path too"
+  "eyes_gate": "follow /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unity/IMPORT-GUIDE.md — chunks ① project → ⑤ play; the guide is the no-Unity-here path too"
 }

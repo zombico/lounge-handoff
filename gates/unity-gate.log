@@ -1,5 +1,5 @@
 [export-unity] resolved 'sk_lkypzdim4y' (kind floorplan) — GLB 695532 bytes, 0 animations
-[export-unity] emitted 25 files (leg v0.4.0) → /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unity-lit
+[export-unity] emitted 25 files (leg v0.4.0) → /Users/fombico/Documents/mojulo/control/data/outcomes/sk_lkypzdim4y/unity
 [export-unity] machine gate — copying pack into Assets/MojuloPack
 [export-unity] machine gate — headless import + scene build (first run resolves packages; may take minutes)
 [export-unity] machine gate — verify pass

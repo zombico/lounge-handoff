@@ -12,12 +12,12 @@ Live: the report at <https://zombico.github.io/lounge-handoff/> and the walkable
 
 | Where to look | What it is |
 | --- | --- |
-| [`index.html`](index.html) | The handoff report: recipe → kernel → three engines → three edits, with the gates verbatim. This is the GitHub Pages front page. |
+| [`index.html`](index.html) | The handoff report: recipe → kernel → three engines → four edits, with the gates verbatim. This is the GitHub Pages front page. |
 | [`walk/`](walk/) | The room as a self-contained three.js page, mojulo's own web tier. It opens on the aerial cutaway; the buttons top-left switch to the corner framing, fly, or walk. In walk, WASD moves and the mouse looks. No build step, no server beyond static hosting. On Pages: `/walk/`. |
 | [`videos/`](videos/) | Representation videos, see below. |
 | [`packs/`](packs/) | The engine handoffs: `godot-lit/`, `unity-lit/`, `unreal/`, and the lit glTF on its own. |
 | [`gates/`](gates/) | What each machine gate measured, verbatim: the Godot handback JSON and log, the Unreal and Unity import and verify logs, and the Unreal sequence-authoring and capture logs behind the two Unreal videos. |
-| [`renders/`](renders/) | Cycles frames (day, night, dusk, before and after each edit), the two Godot frames from the kernel fix, three Unreal frames (spawn, orbit, night), and under `report/` the figures the report page shows. |
+| [`renders/`](renders/) | Cycles frames (day, night, dusk, before and after each edit), the two Godot frames from the kernel fix, the two Unreal frames from the importer fix plus an orbit and a night frame, and under `report/` the figures the report page shows. |
 
 ## The recipe
 
@@ -72,7 +72,7 @@ Two gates, never conflated. A machine measures the handoff; a person judges the 
 | Engine | Machine gate | Eyes |
 | --- | --- | --- |
 | Blender Cycles | export driver ran, frames rendered | frames looked at |
-| Unreal 5.8 | seven of seven checks, nine of nine lights, spawn in metres (`gates/unreal-verify.log`) | opened in the editor; two sequences rendered and their frames looked at |
+| Unreal 5.8 | seven of seven checks, nine of nine lights, spawn in metres (`gates/unreal-verify.log`) | opened in the editor; two sequences rendered, frames looked at, one importer fix, rendered again |
 | Godot 4.7 | import ×2, one-frame run, materials probe: 16 of 16 surfaces, 9 of 9 lights (`gates/godot-gate.json`) | walked; one frame looked at |
 | Unity 6 | six of six verify checks, materials probe 14 shaded / 2 unlit / 9 lights as declared (`gates/unity-gate.json`) | not opened for this room; whether it reads the spots' candela at a sane brightness is unjudged |
 
@@ -82,13 +82,14 @@ candela to engine energy plus a tonemapped environment); the report tells that s
 and after frames.
 
 The Unreal frames added one more. The glTF declares two materials unlit and alpha-blended, the
-contact-shadow stickers under the furniture and the panes, and the Unreal importer swaps all
-sixteen slots onto its opaque lit master, so the stickers draw as solid grey slabs. The gate line
-`materials_unlit — 16 of 16` is the machine confirming that swap. Godot's importer keeps the two
-unlit, which is why its gate says fourteen shaded and two unlit. The oak floor also reads white in
-Unreal: the pack carries the floor as two coplanar layers, the plank base coat and the oak texture,
-and Unreal draws the base coat. Both are importer contracts on the mojulo side, not recipe knobs,
-and neither is fixed in this repository.
+web tier's stickers: the contact shadows under the furniture and the window panes, whose
+transparency rides the vertex alpha. The Unreal importer swapped all sixteen slots onto its
+opaque lit master, so the shadows drew as grey blocks and the panes as solid glass. The gate line
+`materials_unlit — 16 of 16` is the machine confirming that swap; Godot's importer keeps the two
+unlit, which is why its gate says fourteen and two. The fix is in the importer (leg 0.4.2): it
+reads the glTF's material table and gives those slots a third master, unlit and translucent.
+Same pack, same gate count, soft shadows. The report shows the before and after frames as its
+fourth edit. The floor is a separate matter, see held back.
 
 ## Re-mint
 
@@ -134,6 +135,11 @@ once, so a driver waits on the frame count, not the launcher's pid.
 - The Unreal videos were rendered 2026-09-09 from the scratch project the export gate wrote for
   this pack (its `MojuloPack/score.json` is byte-identical to `packs/unreal/score.json`), UE 5.8,
   Lumen, 1280 × 720 at 30 fps, `gates/unreal-cine-author.log` and `gates/unreal-capture.log`.
+- The three engine packs and their gates were re-minted 2026-09-09 from mojulo commit `edeb1bd`
+  plus the Unreal importer fix (leg 0.4.2) in the working tree. The Godot and Unity packs came
+  back byte-identical; the Unreal pack's glTF differs from theirs in one buffer, the oak floor's
+  V coordinates, flipped by mojulo commit `49f1380` so wrapped textures land right way up. Why the
+  Godot and Unity legs did not pick that change up is not yet traced.
 
 ## Held back, honestly
 
@@ -141,8 +147,15 @@ once, so a driver waits on the frame count, not the launcher's pid.
 - The Godot divisor of fifty candela per unit was calibrated against one room and one pair of eyes.
 - The web-tier pools under the cans are proven numerically, not judged by eye.
 - The Blender GI bake exports faces only, so a baked lounge does not carry the pots yet.
-- In Unreal the contact-shadow stickers draw as grey slabs and the oak floor reads white; both are
-  importer contracts the Unreal leg does not have yet, and the fix lives in mojulo, not here.
+- The Unreal importer fix (leg 0.4.2) is in the mojulo working tree, not yet committed, like the
+  Godot kernel fix. Its sticker master is unlit by construction, matching the web tier's contract.
+- The Unreal pack's glTF is not byte-identical to the Godot and Unity packs' (one buffer, the oak
+  floor's V coordinates); see Provenance.
+- No engine pack shows the oak grain. The glTF carries the floor as an untextured plank coat a
+  millimetre above the textured oak; Godot and Unreal draw the coat (tan in one, white under
+  Unreal's sun and auto-exposure), and only the Cycles frames show the grain. The first Unreal
+  render after the sticker fix showed the oak because a fresh project had not finished building
+  the coat's mesh; a re-run draws it, and the videos here are re-runs.
 - The day-to-night shot keys the camera's exposure bias down 2.5 EV. That is a cinematography
   choice, disclosed in `unreal-cine.py`, not a property of the pack or the lights.
 

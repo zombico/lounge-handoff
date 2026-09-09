@@ -62,8 +62,8 @@ def new_sequence(name, frames):
     return seq, path
 
 
-def _lens(comp):
-    comp.set_editor_property('current_focal_length', FOCAL_MM)
+def _lens(comp, focal=FOCAL_MM):
+    comp.set_editor_property('current_focal_length', focal)
     try:
         focus = comp.get_editor_property('focus_settings')
         focus.set_editor_property('focus_method', unreal.CameraFocusMethod.DISABLE)
@@ -72,7 +72,7 @@ def _lens(comp):
         unreal.log_warning('[mojulo-cine] focus settings: ' + str(e))
 
 
-def spawn_camera(seq):
+def spawn_camera(seq, focal=FOCAL_MM):
     """A spawnable CineCameraActor owned by the sequence when its template exposes
     the lens; otherwise one level-placed CineCameraActor 'MojuloCineCamera' that
     every sequence possesses (reused across runs, saved with the map)."""
@@ -90,7 +90,7 @@ def spawn_camera(seq):
         if comp is not None:
             break
     if comp is not None:
-        _lens(comp)
+        _lens(comp, focal)
         return binding
     binding.remove()
     unreal.log_warning('[mojulo-cine] spawnable template exposes no camera component; possessing a level camera instead')
@@ -103,7 +103,7 @@ def spawn_camera(seq):
     if cam is None:
         cam = actors.spawn_actor_from_class(unreal.CineCameraActor, unreal.Vector(0, 0, 150), unreal.Rotator(0, 0, 0))
         cam.set_actor_label('MojuloCineCamera')
-        _lens(cam.get_cine_camera_component())
+        _lens(cam.get_cine_camera_component(), focal)
         unreal.EditorLoadingAndSavingUtils.save_current_level()
     return seq.add_possessable(cam)
 
@@ -241,8 +241,27 @@ def build_day_to_night():
     return path, frames
 
 
+# --- still: the engine's frame from the walker's spawn ------------------------
+# The eyes-gate incantation's camera (BugItGo at the door, the player camera's
+# 90-degree horizontal field) as a 30-frame sequence, so the still gets the
+# capture's warm-up and streamed-in textures; frame 29 is the picture.
+def build_spawn_still():
+    frames = 30
+    seq, path = new_sequence('LS_Spawn', frames)
+    cam = spawn_camera(seq, 11.88)   # 90 degrees across the 23.76 mm back, the player camera's field
+    ch = transform_channels(cam, frames)
+    loc = P([3.66, 7.25, 1.55])
+    key_pose(ch, 0, loc, 0.0, 90.0)
+    key_pose(ch, frames - 1, loc, 0.0, 90.0)
+    camera_cut(seq, cam, frames)
+    unreal.EditorAssetLibrary.save_asset(path)
+    unreal.log('[mojulo-cine] %s: %d frames (a still)' % (path, frames))
+    return path, frames
+
+
 if __name__ == '__main__' or True:
     unreal.EditorLoadingAndSavingUtils.load_map(MAP)
     a = build_walkthrough()
     b = build_day_to_night()
-    unreal.log('[mojulo-cine] done: %s, %s' % (a, b))
+    c = build_spawn_still()
+    unreal.log('[mojulo-cine] done: %s, %s, %s' % (a, b, c))
